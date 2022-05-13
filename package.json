@@ -1,0 +1,9 @@
+{
+  "name": "minimal-analytics",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:jahilldev/minimal-analytics.git",
+  "author": "James Hill <contact@jameshill.dev>",
+  "license": "MIT",
+  "private": true
+}
