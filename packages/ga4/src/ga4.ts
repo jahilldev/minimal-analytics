@@ -76,7 +76,7 @@ function getTrackingId() {
  *
  * -------------------------------- */
 
-function getArguments(...args): [string, IProps] {
+function getArguments(...args: any[]): [string, IProps] {
   const trackingId = typeof args[0] === 'string' ? args[0] : getTrackingId();
   const trackProps = typeof args[0] === 'object' ? args[0] : args[1];
 
@@ -279,7 +279,7 @@ function getScrollPercentage() {
 
 function track(trackingId: string, props: IProps);
 function track(props: IProps);
-function track(...args) {
+function track(...args: any[]) {
   const [trackingId, { type, event, debug, error }] = getArguments(...args);
 
   if (!trackingId) {
