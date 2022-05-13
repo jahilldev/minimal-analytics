@@ -39,8 +39,6 @@ const clientKey = '_gacid';
 const sessionKey = '_gasid';
 const counterKey = '_gasct';
 const analyticsEndpoint = 'https://www.google-analytics.com/g/collect';
-const firstVisit = !localStorage.getItem(clientKey) ? '1' : void 0;
-const sessionStart = !sessionStorage.getItem(sessionKey) ? '1' : void 0;
 const searchTerms = ['q', 's', 'search', 'query', 'keyword'];
 
 /* -----------------------------------
@@ -222,6 +220,9 @@ function getDeviceMeta() {
  * -------------------------------- */
 
 function getQueryParams(trackingId: string, { type, event, debug, error }: IProps) {
+  const firstVisit = localStorage.getItem(clientKey) ? '1' : void 0;
+  const sessionStart = sessionStorage.getItem(sessionKey) ? '1' : void 0;
+
   const payload = {
     v: '2', // v2 for GA4
     tid: trackingId,
@@ -241,7 +242,7 @@ function getQueryParams(trackingId: string, { type, event, debug, error }: IProp
     ...getDeviceMeta(),
   };
 
-  Object.keys(payload).forEach((key) => (payload[key] === void 0 ? delete payload[key] : {}));
+  Object.keys(payload).forEach((key) => payload[key] ?? delete payload[key]);
 
   return new URLSearchParams(payload);
 }
