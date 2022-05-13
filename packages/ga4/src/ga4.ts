@@ -301,7 +301,7 @@ function track(...args: any[]) {
  *
  * -------------------------------- */
 
-function scroll(trackingId: string = getTrackingId()) {
+function scroll(trackingId = getTrackingId()) {
   if (!trackingId) {
     console.error('GA4: Tracking ID is missing or undefined');
 
