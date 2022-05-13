@@ -24,7 +24,6 @@ interface IProps {
 
 let scrollTracking = false;
 const globalId = typeof process.env !== 'undefined' && process.env.GA_TRACKING_ID;
-const debugActive = false;
 const clientKey = '_gacid';
 const sessionKey = '_gasid';
 const counterKey = '_gasct';
