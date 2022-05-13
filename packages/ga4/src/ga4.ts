@@ -22,11 +22,11 @@ interface IProps {
  *
  * -------------------------------- */
 
+let scrollCalled = false;
 const debugActive = false;
 const clientKey = '_gacid';
 const sessionKey = '_gasid';
 const counterKey = '_gasct';
-const trackingId = 'G-HWD0EHM8LC';
 const analyticsEndpoint = 'https://www.google-analytics.com/g/collect';
 const firstVisit = !localStorage.getItem(clientKey) ? '1' : void 0;
 const sessionStart = !sessionStorage.getItem(sessionKey) ? '1' : void 0;
@@ -44,46 +44,6 @@ const options = {
   screenSize: true,
   language: true,
 };
-
-/* -----------------------------------
- *
- * Scroll
- *
- * -------------------------------- */
-
-const scrollEvent = debounce(() => {
-  const body = document.body;
-  const scrollTop = window.pageYOffset || body.scrollTop;
-  const { scrollHeight, offsetHeight, clientHeight } = document.documentElement;
-
-  const documentHeight = Math.max(
-    body.scrollHeight,
-    scrollHeight,
-    body.offsetHeight,
-    offsetHeight,
-    body.clientHeight,
-    clientHeight
-  );
-
-  const trackLength = documentHeight - window.innerHeight;
-  const percentage = Math.floor((scrollTop / trackLength) * 100);
-
-  if (percentage < 90) {
-    return;
-  }
-
-  track({ type: 'scroll', event: { 'epn.percent_scrolled': 90 } });
-
-  document.removeEventListener('scroll', scrollEvent);
-});
-
-/* -----------------------------------
- *
- * Scroll
- *
- * -------------------------------- */
-
-document.addEventListener('scroll', scrollEvent);
 
 /* -----------------------------------
  *
@@ -223,7 +183,7 @@ function getDeviceMeta() {
  *
  * -------------------------------- */
 
-function getQueryParams({ type, event, debug, error }: IProps) {
+function getQueryParams(trackingId: string, { type, event, debug, error }: IProps) {
   const payload = {
     v: '2', // v2 for GA4
     tid: trackingId,
@@ -250,12 +210,40 @@ function getQueryParams({ type, event, debug, error }: IProps) {
 
 /* -----------------------------------
  *
+ * ScrollPercentage
+ *
+ * -------------------------------- */
+
+function getScrollPercentage() {
+  const body = document.body;
+  const scrollTop = window.pageYOffset || body.scrollTop;
+  const { scrollHeight, offsetHeight, clientHeight } = document.documentElement;
+
+  const documentHeight = Math.max(
+    body.scrollHeight,
+    scrollHeight,
+    body.offsetHeight,
+    offsetHeight,
+    body.clientHeight,
+    clientHeight
+  );
+
+  const trackLength = documentHeight - window.innerHeight;
+
+  return Math.floor((scrollTop / trackLength) * 100);
+}
+
+/* -----------------------------------
+ *
  * Track
  *
  * -------------------------------- */
 
-function track({ type = 'page_view', event, debug = debugActive, error }: IProps = {}) {
-  const queryParams = getQueryParams({ type, event, debug, error });
+function track(
+  trackingId: string,
+  { type = 'page_view', event, debug = debugActive, error }: IProps = {}
+) {
+  const queryParams = getQueryParams(trackingId, { type, event, debug, error });
   const queryString = new URLSearchParams(queryParams).toString();
 
   navigator.sendBeacon(`${analyticsEndpoint}?${queryString}`);
@@ -263,12 +251,30 @@ function track({ type = 'page_view', event, debug = debugActive, error }: IProps
 
 /* -----------------------------------
  *
- * Error
+ * Scroll
  *
  * -------------------------------- */
 
-function error(message: string, fatal: boolean) {
-  track({ type: 'exception', error: { message, fatal } });
+function scroll(trackingId: string) {
+  if (scrollCalled) {
+    console.error('GA4: Scroll event tracking already started');
+
+    return;
+  }
+
+  const scrollEvent = debounce(() => {
+    const percentage = getScrollPercentage();
+
+    if (percentage < 90) {
+      return;
+    }
+
+    track(trackingId, { type: 'scroll', event: { 'epn.percent_scrolled': 90 } });
+
+    document.removeEventListener('scroll', scrollEvent);
+  });
+
+  document.addEventListener('scroll', scrollEvent);
 }
 
 /* -----------------------------------
@@ -277,4 +283,4 @@ function error(message: string, fatal: boolean) {
  *
  * -------------------------------- */
 
-export { track, error };
+export { track, scroll };
