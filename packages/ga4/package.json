@@ -7,11 +7,11 @@
   "license": "MIT",
   "main": "lib/ga4.js",
   "directories": {
-    "lib": "lib",
-    "test": "__tests__"
+    "lib": "src",
+    "test": "tests"
   },
   "files": [
-    "lib"
+    "dist"
   ],
   "publishConfig": {
     "registry": "https://registry.yarnpkg.com/"
@@ -21,7 +21,12 @@
     "url": "git+https://github.com/jahilldev/minimal-analytics.git"
   },
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "start": "run-s clean watch",
+    "build": "webpack --mode=production",
+    "watch": "webpack --watch",
+    "clean": "rimraf ./dist",
+    "lint": "eslint",
+    "test": "jest"
   },
   "bugs": {
     "url": "https://github.com/jahilldev/minimal-analytics/issues"

@@ -7,11 +7,11 @@
   "license": "MIT",
   "main": "lib/shared.js",
   "directories": {
-    "lib": "lib",
-    "test": "__tests__"
+    "lib": "dist",
+    "test": "tests"
   },
   "files": [
-    "lib"
+    "dist"
   ],
   "publishConfig": {
     "registry": "https://registry.yarnpkg.com/"
@@ -21,7 +21,10 @@
     "url": "git+https://github.com/jahilldev/minimal-analytics.git"
   },
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "build": "tsc",
+    "watch": "tsc -w",
+    "lint": "eslint",
+    "test": "jest"
   },
   "bugs": {
     "url": "https://github.com/jahilldev/minimal-analytics/issues"
