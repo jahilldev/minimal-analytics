@@ -23,6 +23,7 @@ interface IProps {
  * -------------------------------- */
 
 let scrollTracking = false;
+const trackingId = typeof process.env !== 'undefined' ? process.env.GA_TRACKING_ID : void 0;
 const debugActive = false;
 const clientKey = '_gacid';
 const sessionKey = '_gasid';
@@ -44,6 +45,20 @@ const options = {
   screenSize: true,
   language: true,
 };
+
+/* -----------------------------------
+ *
+ * Arguments
+ *
+ * -------------------------------- */
+
+function getArguments(...args): [string, IProps] {
+  const globalId = process.env.GA_TRACKING_ID;
+  const trackingId = typeof args[0] === 'string' ? args[0] : globalId;
+  const trackProps = typeof args[0] === 'object' ? args[0] : args[1];
+
+  return [trackingId, trackProps];
+}
 
 /* -----------------------------------
  *
@@ -239,10 +254,10 @@ function getScrollPercentage() {
  *
  * -------------------------------- */
 
-function track(
-  trackingId: string,
-  { type = 'page_view', event, debug = debugActive, error }: IProps = {}
-) {
+function track(trackingId: string, props: IProps);
+function track(props: IProps);
+function track(...args) {
+  const [trackingId, { type, event, debug, error }] = getArguments(...args);
   const queryParams = getQueryParams(trackingId, { type, event, debug, error });
   const queryString = new URLSearchParams(queryParams).toString();
 
