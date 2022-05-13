@@ -37,10 +37,12 @@ describe('ga4', () => {
     });
 
     it('can be called directly with a tracking ID', () => {
+      const params = [`?v=${analyticsVersion}`, `&tid=${trackingId}`].join('');
+
       track(trackingId);
 
       expect(navigator.sendBeacon).toBeCalledWith(
-        expect.stringContaining(analyticsEndpoint + `?v=${analyticsVersion}`)
+        expect.stringContaining(analyticsEndpoint + params)
       );
     });
   });
