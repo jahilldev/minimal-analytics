@@ -1,3 +1,5 @@
+import { debounce } from '@minimal-analytics/shared';
+
 /* -----------------------------------
  *
  * IProps
@@ -248,25 +250,11 @@ function getQueryParams({ type, event, debug, error }: IProps) {
 
 /* -----------------------------------
  *
- * Debounce
- *
- * -------------------------------- */
-
-function debounce(callback: TimerHandler, frequency = 500, timer = 0) {
-  return (...args) => (clearTimeout(timer), (timer = setTimeout(callback, frequency, ...args)));
-}
-
-/* -----------------------------------
- *
  * Track
  *
  * -------------------------------- */
 
 function track({ type = 'page_view', event, debug = debugActive, error }: IProps = {}) {
-  if (__DEV__ && !debug) {
-    return; // no-op
-  }
-
   const queryParams = getQueryParams({ type, event, debug, error });
   const queryString = new URLSearchParams(queryParams).toString();
 

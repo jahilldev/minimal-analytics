@@ -5,7 +5,8 @@
   "author": "James Hill <jahill@groupon.com>",
   "homepage": "https://github.com/jahilldev/minimal-analytics#readme",
   "license": "MIT",
-  "main": "lib/shared.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "directories": {
     "lib": "dist",
     "test": "tests"

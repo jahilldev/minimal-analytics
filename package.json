@@ -16,6 +16,11 @@
     "lint": "lerna run lint",
     "test": "lerna run test"
   },
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  },
   "devDependencies": {
     "@babel/core": "^7.17.10",
     "@babel/preset-env": "^7.17.10",
