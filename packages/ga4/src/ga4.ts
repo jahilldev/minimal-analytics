@@ -2,6 +2,18 @@ import { debounce } from '@minimal-analytics/shared';
 
 /* -----------------------------------
  *
+ * Global
+ *
+ * -------------------------------- */
+
+declare global {
+  interface Window {
+    gaTrackingId?: string;
+  }
+}
+
+/* -----------------------------------
+ *
  * IProps
  *
  * -------------------------------- */
@@ -23,7 +35,6 @@ interface IProps {
  * -------------------------------- */
 
 let scrollTracking = false;
-const globalId = typeof process.env !== 'undefined' && process.env.GA_TRACKING_ID;
 const clientKey = '_gacid';
 const sessionKey = '_gasid';
 const counterKey = '_gasct';
@@ -47,12 +58,26 @@ const options = {
 
 /* -----------------------------------
  *
+ * getTrackingId
+ *
+ * -------------------------------- */
+
+function getTrackingId() {
+  if (typeof window.gaTrackingId === 'undefined') {
+    return void 0;
+  }
+
+  return window.gaTrackingId;
+}
+
+/* -----------------------------------
+ *
  * Arguments
  *
  * -------------------------------- */
 
 function getArguments(...args): [string, IProps] {
-  const trackingId = typeof args[0] === 'string' ? args[0] : globalId;
+  const trackingId = typeof args[0] === 'string' ? args[0] : getTrackingId();
   const trackProps = typeof args[0] === 'object' ? args[0] : args[1];
 
   return [trackingId, trackProps];
