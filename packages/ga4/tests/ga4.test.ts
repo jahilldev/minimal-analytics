@@ -33,6 +33,7 @@ describe('ga4', () => {
       track();
 
       expect(errorSpy).toHaveBeenCalledWith(errorTrackingId);
+      expect(navigator.sendBeacon).not.toBeCalled();
     });
 
     it('can be called directly with a tracking ID', () => {
