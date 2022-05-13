@@ -23,7 +23,7 @@ interface IProps {
  * -------------------------------- */
 
 let scrollTracking = false;
-const trackingId = typeof process.env !== 'undefined' ? process.env.GA_TRACKING_ID : void 0;
+const globalId = typeof process.env !== 'undefined' && process.env.GA_TRACKING_ID;
 const debugActive = false;
 const clientKey = '_gacid';
 const sessionKey = '_gasid';
@@ -53,7 +53,6 @@ const options = {
  * -------------------------------- */
 
 function getArguments(...args): [string, IProps] {
-  const globalId = process.env.GA_TRACKING_ID;
   const trackingId = typeof args[0] === 'string' ? args[0] : globalId;
   const trackProps = typeof args[0] === 'object' ? args[0] : args[1];
 
@@ -270,7 +269,7 @@ function track(...args) {
  *
  * -------------------------------- */
 
-function scroll(trackingId: string) {
+function scroll(trackingId: string = globalId) {
   if (scrollTracking) {
     console.error('GA4: Scroll event tracking already started');
 
