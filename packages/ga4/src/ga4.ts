@@ -22,7 +22,7 @@ interface IProps {
  *
  * -------------------------------- */
 
-let scrollCalled = false;
+let scrollTracking = false;
 const debugActive = false;
 const clientKey = '_gacid';
 const sessionKey = '_gasid';
@@ -256,11 +256,13 @@ function track(
  * -------------------------------- */
 
 function scroll(trackingId: string) {
-  if (scrollCalled) {
+  if (scrollTracking) {
     console.error('GA4: Scroll event tracking already started');
 
     return;
   }
+
+  scrollTracking = true;
 
   const scrollEvent = debounce(() => {
     const percentage = getScrollPercentage();
