@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "noImplicitAny": false,
+    "removeComments": true,
+    "noLib": false,
+    "noEmitOnError": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "target": "ES2018",
+    "sourceMap": true,
+    "lib": ["DOM", "ES2015", "ES2016", "ES2017", "ES2018", "ES2019"]
+  },
+  "exclude": ["node_modules", "webpack.config.ts", "tests", "./dist"]
+}

@@ -21,9 +21,9 @@ const outputFiles = [
 
 const defaultConfig = {
   entry: {
-    define: path.join(__dirname, './src/define.ts'),
+    ga4: path.join(__dirname, './src/ga4.ts'),
   },
-  externals: [nodeExternals({ allowlist: ['@component-elements/shared'] })],
+  externals: [nodeExternals({ allowlist: ['@minimal-analytics/shared'] })],
   context: path.join(__dirname, './src'),
   output: {
     path: path.join(__dirname, './dist'),
