@@ -2,7 +2,7 @@ import { debounce } from '@minimal-analytics/shared';
 
 /* -----------------------------------
  *
- * Global
+ * Window
  *
  * -------------------------------- */
 
@@ -281,6 +281,13 @@ function track(trackingId: string, props: IProps);
 function track(props: IProps);
 function track(...args) {
   const [trackingId, { type, event, debug, error }] = getArguments(...args);
+
+  if (!trackingId) {
+    console.error('GA4: Tracking ID is missing or undefined');
+
+    return;
+  }
+
   const queryParams = getQueryParams(trackingId, { type, event, debug, error });
   const queryString = new URLSearchParams(queryParams).toString();
 
@@ -293,7 +300,13 @@ function track(...args) {
  *
  * -------------------------------- */
 
-function scroll(trackingId: string = globalId) {
+function scroll(trackingId: string = getTrackingId()) {
+  if (!trackingId) {
+    console.error('GA4: Tracking ID is missing or undefined');
+
+    return;
+  }
+
   if (scrollTracking) {
     console.error('GA4: Scroll event tracking already started');
 
