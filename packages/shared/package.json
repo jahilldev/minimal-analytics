@@ -1,5 +1,5 @@
 {
-  "name": "shared",
+  "name": "@minimal-analytics/shared",
   "version": "0.0.1",
   "description": "> TODO: description",
   "author": "James Hill <jahill@groupon.com>",
