@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "> TODO: description",
   "author": "James Hill <jahill@groupon.com>",
-  "homepage": "https://github.com/jahilldev/minimal-analytics#readme",
+  "homepage": "https://github.com/jahilldev/minimal-analytics/tree/main/packages/ga4#readme",
   "license": "MIT",
   "main": "./dist/ga4.js",
   "types": "./dist/ga4.d.ts",
