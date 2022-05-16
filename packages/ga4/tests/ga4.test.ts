@@ -55,7 +55,7 @@ describe('ga4 -> track()', () => {
     );
   });
 
-  it('triggers a scroll tracking event once when 90% of window', async () => {
+  it('triggers a tracking event once when scroll is 90% of window', async () => {
     track(trackingId);
 
     document.body.scrollTop = window.innerHeight * 0.95;
@@ -64,6 +64,10 @@ describe('ga4 -> track()', () => {
     await sleep();
 
     expect(navigator.sendBeacon).toBeCalledTimes(2);
+    expect(navigator.sendBeacon).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining(`epn.percent_scrolled=90`)
+    );
 
     document.dispatchEvent(new Event('scroll'));
 
