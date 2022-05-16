@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "> TODO: description",
   "author": "James Hill <jahill@groupon.com>",
+  "private": true,
   "homepage": "https://github.com/jahilldev/minimal-analytics#readme",
   "license": "MIT",
   "main": "./dist/index.js",
