@@ -5,7 +5,7 @@
 ## Usage
 
 ```
-const ga4 = require('ga4');
+import { track } from '@minimal-analytics/ga4';
 
-// TODO: DEMONSTRATE API
+// COMING SOON
 ```

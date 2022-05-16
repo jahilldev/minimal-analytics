@@ -34,12 +34,13 @@ interface IProps {
  *
  * -------------------------------- */
 
-let scrollTracking = false;
+const startTime = Date.now();
 const clientKey = '_gacid';
 const sessionKey = '_gasid';
 const counterKey = '_gasct';
 const analyticsEndpoint = 'https://www.google-analytics.com/g/collect';
 const searchTerms = ['q', 's', 'search', 'query', 'keyword'];
+let eventsBound = false;
 
 /* -----------------------------------
  *
@@ -173,11 +174,7 @@ function getDocumentMeta() {
   const origin = document.location.origin;
   const pathname = document.location.pathname;
   const search = document.location.search;
-  let referrer;
-
-  if (document.referrer.indexOf(location.host) < 0) {
-    referrer = document.referrer;
-  }
+  const referrer = document.referrer;
 
   return { dr: referrer, dl: origin + pathname + search, dt: title };
 }
@@ -274,6 +271,43 @@ function getScrollPercentage() {
 
 /* -----------------------------------
  *
+ * ScrollEvent
+ *
+ * -------------------------------- */
+
+const scrollEvent = debounce((trackingId: string) => {
+  const percentage = getScrollPercentage();
+
+  console.log('scrollEvent', { percentage });
+
+  if (percentage < 90) {
+    return;
+  }
+
+  track(trackingId, { type: 'scroll', event: { 'epn.percent_scrolled': 90 } });
+
+  document.removeEventListener('scroll', scrollEvent);
+});
+
+/* -----------------------------------
+ *
+ * BindEvent
+ *
+ * -------------------------------- */
+
+function bindEvents(trackingId: string) {
+  if (eventsBound) {
+    return;
+  }
+
+  eventsBound = true;
+
+  document.addEventListener('scroll', scrollEvent.bind(null, trackingId));
+  document.addEventListener('visibilitychange', () => {});
+}
+
+/* -----------------------------------
+ *
  * Track
  *
  * -------------------------------- */
@@ -293,42 +327,8 @@ function track(...args: any[]) {
   const queryString = new URLSearchParams(queryParams).toString();
 
   navigator.sendBeacon(`${analyticsEndpoint}?${queryString}`);
-}
 
-/* -----------------------------------
- *
- * Scroll
- *
- * -------------------------------- */
-
-function scroll(trackingId = getTrackingId()) {
-  if (!trackingId) {
-    console.error('GA4: Tracking ID is missing or undefined');
-
-    return;
-  }
-
-  if (scrollTracking) {
-    console.error('GA4: Scroll event tracking already started');
-
-    return;
-  }
-
-  scrollTracking = true;
-
-  const scrollEvent = debounce(() => {
-    const percentage = getScrollPercentage();
-
-    if (percentage < 90) {
-      return;
-    }
-
-    track(trackingId, { type: 'scroll', event: { 'epn.percent_scrolled': 90 } });
-
-    document.removeEventListener('scroll', scrollEvent);
-  });
-
-  document.addEventListener('scroll', scrollEvent);
+  bindEvents(trackingId);
 }
 
 /* -----------------------------------
@@ -337,4 +337,4 @@ function scroll(trackingId = getTrackingId()) {
  *
  * -------------------------------- */
 
-export { track, scroll };
+export { track };
