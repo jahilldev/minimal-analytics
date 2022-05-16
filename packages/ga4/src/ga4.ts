@@ -41,6 +41,7 @@ const counterKey = '_gasct';
 const analyticsEndpoint = 'https://www.google-analytics.com/g/collect';
 const searchTerms = ['q', 's', 'search', 'query', 'keyword'];
 let eventsBound = false;
+let scrollHandler = null;
 
 /* -----------------------------------
  *
@@ -266,7 +267,7 @@ function getScrollPercentage() {
 
   const trackLength = documentHeight - window.innerHeight;
 
-  return Math.floor((scrollTop / trackLength) * 100);
+  return Math.floor(Math.abs(scrollTop / trackLength) * 100);
 }
 
 /* -----------------------------------
@@ -275,10 +276,8 @@ function getScrollPercentage() {
  *
  * -------------------------------- */
 
-const scrollEvent = debounce((trackingId: string) => {
+const onScrollEvent = debounce((trackingId: string) => {
   const percentage = getScrollPercentage();
-
-  console.log('scrollEvent', { percentage });
 
   if (percentage < 90) {
     return;
@@ -286,7 +285,7 @@ const scrollEvent = debounce((trackingId: string) => {
 
   track(trackingId, { type: 'scroll', event: { 'epn.percent_scrolled': 90 } });
 
-  document.removeEventListener('scroll', scrollEvent);
+  document.removeEventListener('scroll', scrollHandler);
 });
 
 /* -----------------------------------
@@ -301,8 +300,9 @@ function bindEvents(trackingId: string) {
   }
 
   eventsBound = true;
+  scrollHandler = onScrollEvent.bind(null, trackingId);
 
-  document.addEventListener('scroll', scrollEvent.bind(null, trackingId));
+  document.addEventListener('scroll', scrollHandler);
   document.addEventListener('visibilitychange', () => {});
 }
 

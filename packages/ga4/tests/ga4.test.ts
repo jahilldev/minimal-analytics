@@ -13,6 +13,14 @@ const errorTrackingId = 'GA4: Tracking ID is missing or undefined';
 
 /* -----------------------------------
  *
+ * Utility
+ *
+ * -------------------------------- */
+
+const sleep = (time = 1) => new Promise((resolve) => setTimeout(resolve, time * 1000));
+
+/* -----------------------------------
+ *
  * Mocks
  *
  * -------------------------------- */
@@ -25,25 +33,42 @@ Object.defineProperty(navigator, 'sendBeacon', { value: jest.fn() });
  *
  * -------------------------------- */
 
-describe('ga4', () => {
+describe('ga4 -> track()', () => {
   const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-  describe('track()', () => {
-    it('logs an error message if no tracking ID is provided', () => {
-      track();
+  beforeEach(() => jest.resetAllMocks());
 
-      expect(errorSpy).toHaveBeenCalledWith(errorTrackingId);
-      expect(navigator.sendBeacon).not.toBeCalled();
-    });
+  it('logs an error message if no tracking ID is provided', () => {
+    track();
 
-    it('can be called directly with a tracking ID', () => {
-      const params = [`?v=${analyticsVersion}`, `&tid=${trackingId}`].join('');
+    expect(errorSpy).toHaveBeenCalledWith(errorTrackingId);
+    expect(navigator.sendBeacon).not.toBeCalled();
+  });
 
-      track(trackingId);
+  it('can be called directly with a tracking ID', () => {
+    const params = [`?v=${analyticsVersion}`, `&tid=${trackingId}`].join('');
 
-      expect(navigator.sendBeacon).toBeCalledWith(
-        expect.stringContaining(analyticsEndpoint + params)
-      );
-    });
+    track(trackingId);
+
+    expect(navigator.sendBeacon).toBeCalledWith(
+      expect.stringContaining(analyticsEndpoint + params)
+    );
+  });
+
+  it('triggers a scroll tracking event once when 90% of window', async () => {
+    track(trackingId);
+
+    document.body.scrollTop = window.innerHeight * 0.95;
+    document.dispatchEvent(new Event('scroll'));
+
+    await sleep();
+
+    expect(navigator.sendBeacon).toBeCalledTimes(2);
+
+    document.dispatchEvent(new Event('scroll'));
+
+    await sleep();
+
+    expect(navigator.sendBeacon).toBeCalledTimes(2);
   });
 });
