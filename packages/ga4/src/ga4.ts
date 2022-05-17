@@ -37,6 +37,7 @@ interface IProps {
 const clientKey = '_gacid';
 const sessionKey = '_gasid';
 const counterKey = '_gasct';
+const viewEvent = 'page_view';
 const analyticsEndpoint = 'https://www.google-analytics.com/g/collect';
 const searchTerms = ['q', 's', 'search', 'query', 'keyword'];
 let eventsBound = false;
@@ -54,7 +55,7 @@ function getArguments(...args: any[]): [string, IProps] {
   const trackingId = typeof args[0] === 'string' ? args[0] : window.gaTrackingId;
   const props = typeof args[0] === 'object' ? args[0] : args[1] || {};
 
-  return [trackingId, { type: 'page_view', ...props }];
+  return [trackingId, { type: viewEvent, ...props }];
 }
 
 /* -----------------------------------
