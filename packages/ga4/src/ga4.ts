@@ -47,39 +47,12 @@ let engagementTimes = [[Date.now()]];
 
 /* -----------------------------------
  *
- * Options
- *
- * -------------------------------- */
-
-const options = {
-  colourDepth: true,
-  characterSet: true,
-  screenSize: true,
-  language: true,
-};
-
-/* -----------------------------------
- *
- * getTrackingId
- *
- * -------------------------------- */
-
-function getTrackingId() {
-  if (typeof window.gaTrackingId === 'undefined') {
-    return void 0;
-  }
-
-  return window.gaTrackingId;
-}
-
-/* -----------------------------------
- *
  * Arguments
  *
  * -------------------------------- */
 
 function getArguments(...args: any[]): [string, IProps] {
-  const trackingId = typeof args[0] === 'string' ? args[0] : getTrackingId();
+  const trackingId = typeof args[0] === 'string' ? args[0] : window.gaTrackingId;
   const props = typeof args[0] === 'object' ? args[0] : args[1] || {};
 
   return [trackingId, { type: 'page_view', ...props }];
@@ -189,7 +162,7 @@ function getDocumentMeta() {
  * -------------------------------- */
 
 function getDeviceMeta() {
-  let screenSize;
+  let screenSize = `${(self.screen || {}).width}x${(self.screen || {}).height}`;
   let colourDepth;
   let viewPort;
 
@@ -198,15 +171,11 @@ function getDeviceMeta() {
     height: Math.floor((self.visualViewport || {}).height),
   };
 
-  if (options.colourDepth && screen.colorDepth) {
+  if (screen.colorDepth) {
     colourDepth = `${screen.colorDepth}-bit`;
   }
 
-  if (options.screenSize) {
-    screenSize = `${(self.screen || {}).width}x${(self.screen || {}).height}`;
-  }
-
-  if (options.screenSize && self.visualViewport) {
+  if (self.visualViewport) {
     viewPort = `${visual.width}x${visual.height}`;
   }
 
