@@ -94,7 +94,7 @@ describe('ga4 -> track()', () => {
       await sleep(time * 0.5);
     }
 
-    document.dispatchEvent(new Event('beforeunload'));
+    window.dispatchEvent(new Event('beforeunload'));
 
     expect(navigator.sendBeacon).toBeCalledTimes(2);
     expect(navigator.sendBeacon).toBeCalledWith(expect.stringContaining('en=user_engagement'));

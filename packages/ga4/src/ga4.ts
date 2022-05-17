@@ -310,7 +310,7 @@ function bindEvents(trackingId: string) {
 
   document.addEventListener('visibilitychange', onVisibilityChange);
   document.addEventListener('scroll', scrollHandler);
-  document.addEventListener('beforeunload', unloadHandler);
+  window.addEventListener('beforeunload', unloadHandler);
 }
 
 /* -----------------------------------
