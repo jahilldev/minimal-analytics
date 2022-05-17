@@ -34,14 +34,12 @@ interface IProps {
  *
  * -------------------------------- */
 
-const startTime = Date.now();
 const clientKey = '_gacid';
 const sessionKey = '_gasid';
 const counterKey = '_gasct';
 const analyticsEndpoint = 'https://www.google-analytics.com/g/collect';
 const searchTerms = ['q', 's', 'search', 'query', 'keyword'];
 let eventsBound = false;
-let visibilityHandler = null;
 let scrollHandler = null;
 let unloadHandler = null;
 let isVisible = true;
@@ -280,7 +278,7 @@ function getScrollPercentage() {
  *
  * -------------------------------- */
 
-function onVisibilityChange(trackingId: string) {
+function onVisibilityChange() {
   const timeIndex = engagementTimes.length - 1;
 
   isVisible = document.visibilityState === 'visible';
@@ -339,12 +337,11 @@ function bindEvents(trackingId: string) {
   }
 
   eventsBound = true;
-  visibilityHandler = onVisibilityChange.bind(null, trackingId);
   scrollHandler = onScrollEvent.bind(null, trackingId);
   unloadHandler = onUnloadEvent.bind(null, trackingId);
 
+  document.addEventListener('visibilitychange', onVisibilityChange);
   document.addEventListener('scroll', scrollHandler);
-  document.addEventListener('visibilitychange', visibilityHandler);
   document.addEventListener('beforeunload', unloadHandler);
 }
 
