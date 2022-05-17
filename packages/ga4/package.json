@@ -7,6 +7,7 @@
   "license": "MIT",
   "main": "./dist/ga4.js",
   "types": "./dist/ga4.d.ts",
+  "sideEffects": false,
   "directories": {
     "lib": "src",
     "test": "tests"
