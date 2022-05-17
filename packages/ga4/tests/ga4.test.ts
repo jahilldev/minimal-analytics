@@ -1,4 +1,4 @@
-import { track } from '../src/ga4';
+import { track } from '../src/index';
 
 /* -----------------------------------
  *
