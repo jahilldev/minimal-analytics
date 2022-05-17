@@ -41,7 +41,11 @@ const counterKey = '_gasct';
 const analyticsEndpoint = 'https://www.google-analytics.com/g/collect';
 const searchTerms = ['q', 's', 'search', 'query', 'keyword'];
 let eventsBound = false;
+let visibilityHandler = null;
 let scrollHandler = null;
+let unloadHandler = null;
+let isVisible = true;
+let engagementTimes = [[Date.now()]];
 
 /* -----------------------------------
  *
@@ -272,6 +276,26 @@ function getScrollPercentage() {
 
 /* -----------------------------------
  *
+ * VisibilityEvent
+ *
+ * -------------------------------- */
+
+function onVisibilityChange(trackingId: string) {
+  const timeIndex = engagementTimes.length - 1;
+
+  isVisible = document.visibilityState === 'visible';
+
+  if (!isVisible) {
+    engagementTimes[timeIndex].push(Date.now());
+
+    return;
+  }
+
+  engagementTimes.push([Date.now()]);
+}
+
+/* -----------------------------------
+ *
  * ScrollEvent
  *
  * -------------------------------- */
@@ -290,6 +314,21 @@ const onScrollEvent = debounce((trackingId: string) => {
 
 /* -----------------------------------
  *
+ * UnloadEvent
+ *
+ * -------------------------------- */
+
+function onUnloadEvent(trackingId: string) {
+  const timeActive = engagementTimes.reduce(
+    (result, [visible, hidden = Date.now()]) => (result += hidden - visible),
+    0
+  );
+
+  track(trackingId, { type: 'user_engagement', event: { _et: timeActive } });
+}
+
+/* -----------------------------------
+ *
  * BindEvent
  *
  * -------------------------------- */
@@ -300,10 +339,13 @@ function bindEvents(trackingId: string) {
   }
 
   eventsBound = true;
+  visibilityHandler = onVisibilityChange.bind(null, trackingId);
   scrollHandler = onScrollEvent.bind(null, trackingId);
+  unloadHandler = onUnloadEvent.bind(null, trackingId);
 
   document.addEventListener('scroll', scrollHandler);
-  document.addEventListener('visibilitychange', () => {});
+  document.addEventListener('visibilitychange', visibilityHandler);
+  document.addEventListener('beforeunload', unloadHandler);
 }
 
 /* -----------------------------------

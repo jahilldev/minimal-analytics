@@ -50,6 +50,7 @@ describe('ga4 -> track()', () => {
 
     track(trackingId);
 
+    expect(navigator.sendBeacon).toBeCalledTimes(1);
     expect(navigator.sendBeacon).toBeCalledWith(
       expect.stringContaining(analyticsEndpoint + params)
     );
@@ -74,5 +75,28 @@ describe('ga4 -> track()', () => {
     await sleep();
 
     expect(navigator.sendBeacon).toBeCalledTimes(2);
+  });
+
+  it('tracks engagement using document visibility event', async () => {
+    const events = [...Array(4).keys()];
+    let isVisible = 'visible';
+
+    track(trackingId);
+
+    for (const time of events) {
+      Object.defineProperty(document, 'visibilityState', {
+        value: (isVisible = isVisible === 'visible' ? 'hidden' : 'visible'),
+        writable: true,
+      });
+
+      document.dispatchEvent(new Event('visibilitychange'));
+
+      await sleep(time * 0.5);
+    }
+
+    document.dispatchEvent(new Event('beforeunload'));
+
+    expect(navigator.sendBeacon).toBeCalledTimes(2);
+    expect(navigator.sendBeacon).toBeCalledWith(expect.stringContaining('en=user_engagement'));
   });
 });
