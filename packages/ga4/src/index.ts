@@ -8,7 +8,10 @@ import { debounce } from '@minimal-analytics/shared';
 
 declare global {
   interface Window {
-    gaTrackingId?: string;
+    minimalAnalytics?: {
+      trackingId?: string;
+      autoTrack?: boolean;
+    };
   }
 }
 
@@ -34,6 +37,8 @@ interface IProps {
  *
  * -------------------------------- */
 
+const isBrowser = typeof window !== 'undefined';
+const autoTrack = isBrowser && window.minimalAnalytics?.autoTrack;
 const clientKey = '_gacid';
 const sessionKey = '_gasid';
 const counterKey = '_gasct';
@@ -64,7 +69,8 @@ const eventKeys = {
  * -------------------------------- */
 
 function getArguments(...args: any[]): [string, IProps] {
-  const trackingId = typeof args[0] === 'string' ? args[0] : window.gaTrackingId;
+  const globalId = window.minimalAnalytics?.trackingId;
+  const trackingId = typeof args[0] === 'string' ? args[0] : globalId;
   const props = typeof args[0] === 'object' ? args[0] : args[1] || {};
 
   return [trackingId, { type: eventKeys.pageView, ...props }];
@@ -348,6 +354,16 @@ function track(...args: any[]) {
   navigator.sendBeacon(`${analyticsEndpoint}?${queryString}`);
 
   bindEvents(trackingId);
+}
+
+/* -----------------------------------
+ *
+ * Init
+ *
+ * -------------------------------- */
+
+if (autoTrack) {
+  track(window.minimalAnalytics?.trackingId);
 }
 
 /* -----------------------------------

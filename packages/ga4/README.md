@@ -47,7 +47,9 @@ To call `track` without a tracking ID, it must be defined on the window via `gaT
 
 ```html
 <script>
-  window.gaTrackingId = 'GX-XXXXX';
+  window.minimalAnalytics = {
+    trackingId: 'GX-XXXXX',
+  };
 </script>
 ```
 
@@ -59,6 +61,29 @@ The default event type of `page_view` can be overriden by providing the relevant
 // "type" and "event" can contain anything
 track({ type: 'user_signup', event: { 'user.id': 12345 });
 ```
+
+## Onload
+
+If you'd prefer to let the `ga4` script initialise tracking itself when loaded, you can define the following property on the window, prior to including the script on the page:
+
+```js
+window.minimalAnalytics = {
+  trackingId: 'GX-XXXXX',
+  autoTrack: true, // <-- init tracking
+};
+```
+
+Once the `ga4` script has loaded, `track` will automatically be called with the tracking ID defined above. You _must_ ensure both `trackingId` and `autoTrack` are properly defined for this to work.
+
+## CDN
+
+If you're not running or building your application in a Node environment, you can make use of the following CDN to include the script on your page:
+
+https://unpkg.com/@minimal-analytics/ga4/dist/index.js
+
+Alternatively, you can download the script from the link above and host it yourself.
+
+You must enable `autoTrack` to use `ga4` in this way, see [Onload](#onload) for details.
 
 # Acknowledgement
 
