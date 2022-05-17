@@ -42,7 +42,6 @@ const searchTerms = ['q', 's', 'search', 'query', 'keyword'];
 let eventsBound = false;
 let scrollHandler = null;
 let unloadHandler = null;
-let isVisible = true;
 let engagementTimes = [[Date.now()]];
 
 /* -----------------------------------
@@ -249,8 +248,7 @@ function getScrollPercentage() {
 
 function onVisibilityChange() {
   const timeIndex = engagementTimes.length - 1;
-
-  isVisible = document.visibilityState === 'visible';
+  const isVisible = document.visibilityState === 'visible';
 
   if (!isVisible) {
     engagementTimes[timeIndex].push(Date.now());
