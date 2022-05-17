@@ -1,7 +1,7 @@
 {
   "name": "@minimal-analytics/ga4",
-  "version": "1.3.2",
-  "description": "> TODO: description",
+  "version": "1.3.4",
+  "description": "A tiny (1KB GZipped) version of GA4, complete with page view, engagement and scroll tracking",
   "author": "James Hill <jahill@groupon.com>",
   "homepage": "https://github.com/jahilldev/minimal-analytics/tree/main/packages/ga4#readme",
   "license": "MIT",
@@ -14,6 +14,16 @@
   },
   "files": [
     "dist"
+  ],
+  "bugs": {
+    "url": "https://github.com/jahilldev/minimal-analytics/issues"
+  },
+  "keywords": [
+    "ga4",
+    "minimal",
+    "performance",
+    "analytics",
+    "tracking"
   ],
   "publishConfig": {
     "registry": "https://registry.yarnpkg.com/",
@@ -30,9 +40,6 @@
     "clean": "rimraf ./dist",
     "lint": "eslint",
     "test": "jest"
-  },
-  "bugs": {
-    "url": "https://github.com/jahilldev/minimal-analytics/issues"
   },
   "devDependencies": {
     "@minimal-analytics/shared": "1.0.0"
