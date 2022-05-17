@@ -43,7 +43,7 @@ function track(trackingId: string, props?: IProps);
 function track(props?: IProps);
 ```
 
-To call `track` without a tracking ID, it must be defined on the window via `gaTrackingId`, e.g:
+To call `track` without a tracking ID, it must be defined on the window via `trackingId`, e.g:
 
 ```html
 <script>
