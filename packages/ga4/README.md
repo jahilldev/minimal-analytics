@@ -62,4 +62,4 @@ track({ type: 'user_signup', event: { 'user.id': 12345 });
 
 # Acknowledgement
 
-This package builds on the great work done by [David Künnen](https://github.com/DavidKuennen) and [Dariusz Więckiewicz](https://github.com/idarek). David's work on the small drop in replacement for Universal Analytics, and Dariusz's port over to GA4 were instrumental in providing a blue print for this `@minimal-analytics/ga4`.
+This package builds on the great work done by [David Künnen](https://github.com/DavidKuennen) and [Dariusz Więckiewicz](https://github.com/idarek). David's work on the small drop in replacement for Universal Analytics, and Dariusz's port over to GA4 were instrumental in providing a blue print for `@minimal-analytics/ga4`.
