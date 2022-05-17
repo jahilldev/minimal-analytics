@@ -37,13 +37,25 @@ interface IProps {
 const clientKey = '_gacid';
 const sessionKey = '_gasid';
 const counterKey = '_gasct';
-const viewEvent = 'page_view';
 const analyticsEndpoint = 'https://www.google-analytics.com/g/collect';
 const searchTerms = ['q', 's', 'search', 'query', 'keyword'];
 let eventsBound = false;
 let scrollHandler = null;
 let unloadHandler = null;
 let engagementTimes = [[Date.now()]];
+
+/* -----------------------------------
+ *
+ * Events
+ *
+ * -------------------------------- */
+
+const eventKeys = {
+  pageView: 'page_view',
+  scroll: 'scroll',
+  viewSearchResults: 'view_search_results',
+  userEngagement: 'user_engagement',
+};
 
 /* -----------------------------------
  *
@@ -55,7 +67,7 @@ function getArguments(...args: any[]): [string, IProps] {
   const trackingId = typeof args[0] === 'string' ? args[0] : window.gaTrackingId;
   const props = typeof args[0] === 'object' ? args[0] : args[1] || {};
 
-  return [trackingId, { type: viewEvent, ...props }];
+  return [trackingId, { type: eventKeys.pageView, ...props }];
 }
 
 /* -----------------------------------
@@ -129,7 +141,7 @@ function getEventMeta({ type, event }: Pick<IProps, 'type' | 'event'>) {
     new RegExp(`[\?|&]${term}=`, 'g').test(searchString)
   );
 
-  const eventId = searchResults ? 'view_search_results' : type;
+  const eventId = searchResults ? eventKeys.viewSearchResults : type;
   const searchTerm = searchTerms.find((term) => searchParams.get(term));
 
   return {
@@ -273,7 +285,7 @@ const onScrollEvent = debounce((trackingId: string) => {
     return;
   }
 
-  track(trackingId, { type: 'scroll', event: { 'epn.percent_scrolled': 90 } });
+  track(trackingId, { type: eventKeys.scroll, event: { 'epn.percent_scrolled': 90 } });
 
   document.removeEventListener('scroll', scrollHandler);
 });
@@ -290,7 +302,7 @@ function onUnloadEvent(trackingId: string) {
     0
   );
 
-  track(trackingId, { type: 'user_engagement', event: { _et: timeActive } });
+  track(trackingId, { type: eventKeys.userEngagement, event: { _et: timeActive } });
 }
 
 /* -----------------------------------
