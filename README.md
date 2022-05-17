@@ -4,7 +4,7 @@ This project aims to provide minimal implementations of popular analytics librar
 
 # Getting Started
 
-Depending on your component library, visit the relevant package below and follow setup instructions:
+Depending on your preferred service, visit the relevant package below and follow setup instructions:
 
 | Library | Package                                                                                                |
 | ------- | ------------------------------------------------------------------------------------------------------ |
