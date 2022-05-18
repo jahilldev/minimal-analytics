@@ -57,7 +57,9 @@ To call `track` without a tracking ID, it must be defined on the window via `tra
 
 ## Events
 
-The default event type of `page_view` can be overriden by providing the relevant argument to the `track` function. The interface for this [can be found here](https://github.com/jahilldev/minimal-analytics/blob/main/packages/ga4/src/ga4.ts#L21).
+The default event type of `page_view` can be overriden by providing the relevant argument to the `track` function. The interface for this [can be found here](https://github.com/jahilldev/minimal-analytics/blob/main/packages/ga4/src/index.ts#L24).
+
+
 
 ```ts
 // "type" and "event" can contain anything
