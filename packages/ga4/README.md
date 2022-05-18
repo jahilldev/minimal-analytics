@@ -8,6 +8,8 @@ This is intended for those who want to minimize the impact of third-party JavaSc
 
 # Getting Started
 
+**N.B.** The instructions below assume a Node environment is available. If you're not running or building your application in a Node environment, jump to the [CDN section](#cdn). 
+
 Install with Yarn:
 
 ```bash
@@ -83,7 +85,7 @@ https://unpkg.com/@minimal-analytics/ga4/dist/index.js
 
 Alternatively, you can download the script from the link above and host it yourself.
 
-You must enable `autoTrack` to use `ga4` in this way, see [Onload](#onload) for details.
+You must enable `autoTrack` to use `ga4` in this way, see [Onload](#onload) for further instructions.
 
 # Acknowledgement
 
