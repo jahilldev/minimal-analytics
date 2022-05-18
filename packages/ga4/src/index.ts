@@ -349,9 +349,8 @@ function track(...args: any[]) {
   }
 
   const queryParams = getQueryParams(trackingId, { type, event, debug, error });
-  const queryString = new URLSearchParams(queryParams).toString();
 
-  navigator.sendBeacon(`${analyticsEndpoint}?${queryString}`);
+  navigator.sendBeacon(`${analyticsEndpoint}?${queryParams}`);
 
   bindEvents(trackingId);
 }
