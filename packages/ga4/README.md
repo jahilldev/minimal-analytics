@@ -8,6 +8,8 @@ This is intended for those who want to minimize the impact of third-party JavaSc
 
 # Getting Started
 
+**N.B.** The instructions below assume a Node environment is available. If you're not running or building your application in a Node environment, jump to the [CDN section](#cdn). 
+
 Install with Yarn:
 
 ```bash
@@ -43,7 +45,7 @@ function track(trackingId: string, props?: IProps);
 function track(props?: IProps);
 ```
 
-To call `track` without a tracking ID, it must be defined on the window via `gaTrackingId`, e.g:
+To call `track` without a tracking ID, it must be defined on the window via `trackingId`, e.g:
 
 ```html
 <script>
@@ -55,7 +57,9 @@ To call `track` without a tracking ID, it must be defined on the window via `gaT
 
 ## Events
 
-The default event type of `page_view` can be overriden by providing the relevant argument to the `track` function. The interface for this [can be found here](https://github.com/jahilldev/minimal-analytics/blob/main/packages/ga4/src/ga4.ts#L21).
+The default event type of `page_view` can be overriden by providing the relevant argument to the `track` function. The interface for this [can be found here](https://github.com/jahilldev/minimal-analytics/blob/main/packages/ga4/src/index.ts#L24).
+
+
 
 ```ts
 // "type" and "event" can contain anything
@@ -83,7 +87,7 @@ https://unpkg.com/@minimal-analytics/ga4/dist/index.js
 
 Alternatively, you can download the script from the link above and host it yourself.
 
-You must enable `autoTrack` to use `ga4` in this way, see [Onload](#onload) for details.
+You must enable `autoTrack` to use `ga4` in this way, see [Onload](#onload) for further instructions.
 
 # Acknowledgement
 
