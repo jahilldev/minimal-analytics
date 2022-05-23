@@ -79,7 +79,7 @@ window.minimalAnalytics = {
 
 Once the `ga4` script has loaded, `track` will automatically be called with the tracking ID defined above. You _must_ ensure both `trackingId` and `autoTrack` are properly defined for this to work.
 
-## CDN
+# CDN
 
 If you're not running or building your application in a Node environment, you can make use of the following CDN to include the script on your page:
 
