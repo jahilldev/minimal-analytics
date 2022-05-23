@@ -68,7 +68,7 @@ const eventKeys = {
  *
  * -------------------------------- */
 
-function getArguments(...args: any[]): [string, IProps] {
+function getArguments(args: any[]): [string, IProps] {
   const globalId = window.minimalAnalytics?.trackingId;
   const trackingId = typeof args[0] === 'string' ? args[0] : globalId;
   const props = typeof args[0] === 'object' ? args[0] : args[1] || {};
