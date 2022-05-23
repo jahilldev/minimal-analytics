@@ -340,7 +340,7 @@ function bindEvents(trackingId: string) {
 function track(trackingId: string, props?: IProps);
 function track(props?: IProps);
 function track(...args: any[]) {
-  const [trackingId, { type, event, debug, error }] = getArguments(...args);
+  const [trackingId, { type, event, debug, error }] = getArguments(args);
 
   if (!trackingId) {
     console.error('GA4: Tracking ID is missing or undefined');
