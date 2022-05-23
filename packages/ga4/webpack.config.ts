@@ -10,7 +10,7 @@ import * as path from 'path';
 
 const outputFiles = [
   // { target: 'es5', filename: '[name].es5.js' },
-  { target: 'es2016', filename: '[name].js' },
+  { target: 'es2018', filename: '[name].js' },
 ];
 
 /* -----------------------------------
