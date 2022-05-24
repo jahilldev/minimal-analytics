@@ -1,3 +1,5 @@
+import { getRandomId } from './utility';
+
 /* -----------------------------------
  *
  * Variables
@@ -28,7 +30,7 @@ function getDocument() {
  * -------------------------------- */
 
 function getClientId(key = clientKey) {
-  const clientId = Math.random().toString(36);
+  const clientId = getRandomId();
   const storedValue = localStorage.getItem(key);
 
   if (!storedValue) {
@@ -47,7 +49,7 @@ function getClientId(key = clientKey) {
  * -------------------------------- */
 
 function getSessionId(key = sessionKey) {
-  const sessionId = `${Math.floor(Math.random() * 1e16) + 1}`;
+  const sessionId = getRandomId();
   const storedValue = sessionStorage.getItem(key);
 
   if (!storedValue) {

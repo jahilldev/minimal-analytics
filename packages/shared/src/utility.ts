@@ -10,6 +10,16 @@ function debounce(callback: TimerHandler, frequency = 500, timer = 0) {
 
 /* -----------------------------------
  *
+ * RandomID
+ *
+ * -------------------------------- */
+
+function getRandomId() {
+  return `${Math.floor(Math.random() * 1e16) + 1}`;
+}
+
+/* -----------------------------------
+ *
  * ScrollPercentage
  *
  * -------------------------------- */
@@ -39,4 +49,4 @@ function getScrollPercentage() {
  *
  * -------------------------------- */
 
-export { debounce, getScrollPercentage };
+export { debounce, getRandomId, getScrollPercentage };
