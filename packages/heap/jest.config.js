@@ -6,6 +6,7 @@
 
 module.exports = {
   testEnvironment: 'jsdom',
+  testURL: 'http://localhost',
   globals: { __DEV__: true },
   roots: ['<rootDir>'],
   collectCoverage: true,
