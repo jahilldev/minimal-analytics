@@ -109,30 +109,14 @@ function getEventMeta({ type, event }: Pick<IProps, 'type' | 'event'>) {
     new RegExp(`[\?|&]${term}=`, 'g').test(searchString)
   );
 
-  const eventId = searchResults ? eventKeys.viewSearchResults : type;
+  const eventName = searchResults ? eventKeys.viewSearchResults : type;
   const searchTerm = searchTerms.find((term) => searchParams.get(term));
 
   return {
-    en: eventId,
+    en: eventName,
     'ep.search_term': searchTerm,
     ...(event && { ...event }),
   };
-}
-
-/* -----------------------------------
- *
- * Document
- *
- * -------------------------------- */
-
-function getDocumentMeta() {
-  const title = document.title;
-  const origin = document.location.origin;
-  const pathname = document.location.pathname;
-  const search = document.location.search;
-  const referrer = document.referrer;
-
-  return { dr: referrer, dl: origin + pathname + search, dt: title };
 }
 
 /* -----------------------------------
