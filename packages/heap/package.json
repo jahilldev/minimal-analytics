@@ -1,0 +1,50 @@
+{
+  "name": "@minimal-analytics/heap",
+  "version": "1.0.0",
+  "description": "A tiny (1KB GZipped) version of Heap, complete with page view tracking",
+  "author": "James Hill <jahill@groupon.com>",
+  "homepage": "https://github.com/jahilldev/minimal-analytics/tree/main/packages/heap#readme",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "directories": {
+    "lib": "src",
+    "test": "tests"
+  },
+  "files": [
+    "dist"
+  ],
+  "bugs": {
+    "url": "https://github.com/jahilldev/minimal-analytics/issues"
+  },
+  "keywords": [
+    "ga4",
+    "minimal",
+    "performance",
+    "analytics",
+    "tracking"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.yarnpkg.com/",
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jahilldev/minimal-analytics.git"
+  },
+  "engines": {
+    "node": ">=16.3.0"
+  },
+  "scripts": {
+    "start": "run-s clean watch",
+    "build": "webpack --mode=production",
+    "watch": "webpack --watch",
+    "clean": "rimraf ./dist",
+    "lint": "eslint",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@minimal-analytics/shared": "1.0.0"
+  }
+}
