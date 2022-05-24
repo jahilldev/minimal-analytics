@@ -118,7 +118,9 @@ function track(...args: any[]) {
 
   const queryParams = getQueryParams(trackingId, { type, event, debug, error });
 
-  window.fetch(`${analyticsEndpoint}?${queryParams}`);
+  window.fetch(`${analyticsEndpoint}?${queryParams}`, {
+    mode: 'no-cors',
+  });
 
   bindEvents(trackingId);
 }
