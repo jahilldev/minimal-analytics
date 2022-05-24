@@ -1,4 +1,10 @@
-import { debounce, getDocument, getClientId, getSessionId } from '@minimal-analytics/shared';
+import {
+  debounce,
+  getDocument,
+  getClientId,
+  getSessionId,
+  getScrollPercentage,
+} from '@minimal-analytics/shared';
 
 /* -----------------------------------
  *
@@ -181,31 +187,6 @@ function getQueryParams(trackingId: string, { type, event, debug, error }: IProp
   Object.keys(payload).forEach((key) => payload[key] ?? delete payload[key]);
 
   return new URLSearchParams(payload);
-}
-
-/* -----------------------------------
- *
- * ScrollPercentage
- *
- * -------------------------------- */
-
-function getScrollPercentage() {
-  const body = document.body;
-  const scrollTop = window.pageYOffset || body.scrollTop;
-  const { scrollHeight, offsetHeight, clientHeight } = document.documentElement;
-
-  const documentHeight = Math.max(
-    body.scrollHeight,
-    scrollHeight,
-    body.offsetHeight,
-    offsetHeight,
-    body.clientHeight,
-    clientHeight
-  );
-
-  const trackLength = documentHeight - window.innerHeight;
-
-  return Math.floor(Math.abs(scrollTop / trackLength) * 100);
 }
 
 /* -----------------------------------
