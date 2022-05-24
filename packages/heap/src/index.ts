@@ -118,7 +118,7 @@ function track(...args: any[]) {
 
   const queryParams = getQueryParams(trackingId, { type, event, debug, error });
 
-  navigator.sendBeacon(`${analyticsEndpoint}?${queryParams}`);
+  window.fetch(`${analyticsEndpoint}?${queryParams}`);
 
   bindEvents(trackingId);
 }
