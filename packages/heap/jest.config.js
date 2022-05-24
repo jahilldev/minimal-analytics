@@ -12,14 +12,14 @@ module.exports = {
   collectCoverageFrom: ['<rootDir>/src/**/*.{ts,tsx}'],
   coverageDirectory: '<rootDir>/tests/coverage',
   coveragePathIgnorePatterns: ['/node_modules/', '(.*).d.ts'],
-  coverageThreshold: {
-    global: {
-      statements: 97,
-      branches: 75,
-      functions: 100,
-      lines: 96,
-    },
-  },
+  // coverageThreshold: {
+  //   global: {
+  //     statements: 97,
+  //     branches: 75,
+  //     functions: 100,
+  //     lines: 96,
+  //   },
+  // },
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
     '^.+\\js$': 'babel-jest',

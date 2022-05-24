@@ -1,4 +1,4 @@
-import { getDocumentMeta } from '@minimal-analytics/shared';
+import { getDocument, getClientId, getSessionId } from '@minimal-analytics/shared';
 
 /* -----------------------------------
  *
@@ -44,19 +44,6 @@ let eventsBound = false;
 
 /* -----------------------------------
  *
- * Events
- *
- * -------------------------------- */
-
-const eventKeys = {
-  pageView: 'page_view',
-  scroll: 'scroll',
-  viewSearchResults: 'view_search_results',
-  userEngagement: 'user_engagement',
-};
-
-/* -----------------------------------
- *
  * Arguments
  *
  * -------------------------------- */
@@ -66,7 +53,7 @@ function getArguments(args: any[]): [string, IProps] {
   const trackingId = typeof args[0] === 'string' ? args[0] : globalId;
   const props = typeof args[0] === 'object' ? args[0] : args[1] || {};
 
-  return [trackingId, { type: eventKeys.pageView, ...props }];
+  return [trackingId, { ...props }];
 }
 
 /* -----------------------------------
@@ -76,17 +63,18 @@ function getArguments(args: any[]): [string, IProps] {
  * -------------------------------- */
 
 function getQueryParams(trackingId: string, { type, event, debug, error }: IProps) {
-  const { hostname, referrer, title } = getDocumentMeta();
+  const { hostname, referrer, title } = getDocument();
 
   const payload = {
     a: trackingId,
     b: 'web',
     d: hostname,
     tv: '4.0',
-    u: 'clientId', // todo
+    u: getClientId(),
     r: referrer,
-    s: 'sessionId', // todo
+    s: getSessionId(),
     t: title,
+    ts: `${Date.now()}`,
     /*
     _p: getSessionId('_gapid'),
     ul: (navigator.language || '').toLowerCase() || void 0,
