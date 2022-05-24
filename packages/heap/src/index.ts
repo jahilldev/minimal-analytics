@@ -1,4 +1,4 @@
-import { getDocument, getClientId, getSessionId } from '@minimal-analytics/shared';
+import { getDocument, getRandomId, getClientId, getSessionId } from '@minimal-analytics/shared';
 import { params } from './model';
 
 /* -----------------------------------
@@ -68,16 +68,20 @@ function getQueryParams(trackingId: string, { type, event, debug, error }: IProp
 
   const payload = {
     [params.appId]: trackingId,
-    b: 'web',
     [params.domain]: hostname,
     [params.path]: pathname,
     [params.version]: '4.0',
     [params.userId]: getClientId(),
     [params.referrer]: referrer,
     [params.sessionId]: getSessionId(),
+    [params.viewId]: getRandomId(),
     [params.title]: title,
+    [params.previousPage]: referrer,
     [params.timeStamp]: `${Date.now()}`,
     [params.sentTime]: `${Date.now()}`,
+    b: 'web',
+    sp: 'r', // ?
+    z: '2', // ?
   };
 
   Object.keys(payload).forEach((key) => payload[key] ?? delete payload[key]);

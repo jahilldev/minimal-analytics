@@ -24,6 +24,7 @@ const params = {
   userId: 'u',
   sessionId: 's',
   sentTime: 'st',
+  viewId: 'v',
   previousPage: 'pr',
   utm: {
     source: 'us',

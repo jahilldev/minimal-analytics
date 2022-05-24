@@ -14,7 +14,7 @@ function debounce(callback: TimerHandler, frequency = 500, timer = 0) {
  *
  * -------------------------------- */
 
-function getRandomId() {
+function getRandomId(length = 16) {
   return `${Math.floor(Math.random() * 1e16) + 1}`;
 }
 
