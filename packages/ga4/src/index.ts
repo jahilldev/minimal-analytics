@@ -1,4 +1,4 @@
-import { debounce } from '@minimal-analytics/shared';
+import { debounce, getDocument, getClientId, getSessionId } from '@minimal-analytics/shared';
 
 /* -----------------------------------
  *
@@ -74,44 +74,6 @@ function getArguments(args: any[]): [string, IProps] {
   const props = typeof args[0] === 'object' ? args[0] : args[1] || {};
 
   return [trackingId, { type: eventKeys.pageView, ...props }];
-}
-
-/* -----------------------------------
- *
- * ClientId
- *
- * -------------------------------- */
-
-function getClientId(key = clientKey) {
-  const clientId = Math.random().toString(36);
-  const storedValue = localStorage.getItem(key);
-
-  if (!storedValue) {
-    localStorage.setItem(key, clientId);
-
-    return clientId;
-  }
-
-  return storedValue;
-}
-
-/* -----------------------------------
- *
- * SessionId
- *
- * -------------------------------- */
-
-function getSessionId(key = sessionKey) {
-  const sessionId = `${Math.floor(Math.random() * 1000000000) + 1}`;
-  const storedValue = sessionStorage.getItem(key);
-
-  if (!storedValue) {
-    sessionStorage.setItem(key, sessionId);
-
-    return sessionId;
-  }
-
-  return storedValue;
 }
 
 /* -----------------------------------
@@ -207,6 +169,7 @@ function getDeviceMeta() {
  * -------------------------------- */
 
 function getQueryParams(trackingId: string, { type, event, debug, error }: IProps) {
+  const { location, referrer, title } = getDocument();
   const firstVisit = localStorage.getItem(clientKey) ? '1' : void 0;
   const sessionStart = sessionStorage.getItem(sessionKey) ? '1' : void 0;
 
@@ -224,8 +187,10 @@ function getQueryParams(trackingId: string, { type, event, debug, error }: IProp
     _ss: sessionStart,
     _dbg: debug ? '1' : void 0,
     exd: error?.message || void 0,
+    dr: referrer,
+    dl: location,
+    dt: title,
     ...getEventMeta({ type, event }),
-    ...getDocumentMeta(),
     ...getDeviceMeta(),
   };
 
