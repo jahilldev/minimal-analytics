@@ -6,6 +6,7 @@ This project aims to provide minimal implementations of popular analytics librar
 
 Depending on your preferred service, visit the relevant package below and follow setup instructions:
 
-| Library | Package                                                                                                |
-| ------- | ------------------------------------------------------------------------------------------------------ |
-| GA4     | [@minimal-analytics/ga4](https://github.com/jahilldev/minimal-analytics/tree/main/packages/ga4#readme) |
+| Library | Package                                                                                                  | Ready    |
+| ------- | -------------------------------------------------------------------------------------------------------- | -------- |
+| GA4     | [@minimal-analytics/ga4](https://github.com/jahilldev/minimal-analytics/tree/main/packages/ga4#readme)   | Yes      |
+| Heap    | [@minimal-analytics/heap](https://github.com/jahilldev/minimal-analytics/tree/main/packages/heap#readme) | No (TBD) |
