@@ -64,12 +64,13 @@ function getArguments(args: any[]): [string, IProps] {
  * -------------------------------- */
 
 function getQueryParams(trackingId: string, { type, event, debug, error }: IProps) {
-  const { hostname, referrer, title } = getDocument();
+  const { hostname, referrer, title, pathname } = getDocument();
 
   const payload = {
     [params.appId]: trackingId,
     b: 'web',
     [params.domain]: hostname,
+    [params.path]: pathname,
     [params.version]: '4.0',
     [params.userId]: getClientId(),
     [params.referrer]: referrer,
