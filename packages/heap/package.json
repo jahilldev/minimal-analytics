@@ -1,7 +1,7 @@
 {
   "name": "@minimal-analytics/heap",
-  "version": "1.0.0",
-  "description": "A tiny (1KB GZipped) version of Heap, complete with page view tracking",
+  "version": "0.0.1",
+  "description": "A tiny (1KB GZipped) version of Heap, complete with page view and input tracking",
   "author": "James Hill <jahill@groupon.com>",
   "homepage": "https://github.com/jahilldev/minimal-analytics/tree/main/packages/heap#readme",
   "license": "MIT",
