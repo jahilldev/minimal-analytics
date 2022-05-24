@@ -47,7 +47,7 @@ function getClientId(key = clientKey) {
  * -------------------------------- */
 
 function getSessionId(key = sessionKey) {
-  const sessionId = `${Math.floor(Math.random() * 1000000000) + 1}`;
+  const sessionId = `${Math.floor(Math.random() * 1e16) + 1}`;
   const storedValue = sessionStorage.getItem(key);
 
   if (!storedValue) {
