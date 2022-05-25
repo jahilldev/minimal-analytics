@@ -125,25 +125,36 @@ function getAttributeValue(attributes: NamedNodeMap | undefined) {
 
 /* -----------------------------------
  *
- * ClickEvent
+ * ClassList
  *
  * -------------------------------- */
 
-function onClickEvent(trackingId: string, event: PointerEvent) {
-  const target = event.target as any;
-  const textContent = (target?.textContent || '').substring(0, textLimit);
+function getClassList(className: string) {
+  return !className ? className : `.${className.split(' ').join(';.')};`;
+}
 
-  const nodePath = (event as any).path.reverse().filter(({ tagName }) => {
+/* -----------------------------------
+ *
+ * TagName
+ *
+ * -------------------------------- */
+
+function getTagName(element: Element) {
+  return (element.tagName || element.parentElement?.tagName).toLowerCase();
+}
+
+/* -----------------------------------
+ *
+ * Hierachy
+ *
+ * -------------------------------- */
+
+function getElementHierachy(path: Element[]) {
+  const nodePath = path.reverse().filter(({ tagName }) => {
     return !!tagName && !blockedTags.includes(tagName.toLowerCase());
-  }) as Element[];
+  });
 
-  const getClassList = (className: string) =>
-    !className ? className : `.${className.split(' ').join(';.')};`;
-
-  const getTagName = (element: Element) =>
-    (element.tagName || element.parentElement?.tagName).toLowerCase();
-
-  const pathValue = nodePath.reduce(
+  return nodePath.reduce(
     (result, element) =>
       (result += `${[
         `@${getTagName(element)};`,
@@ -152,16 +163,40 @@ function onClickEvent(trackingId: string, event: PointerEvent) {
       ].join('')}|`),
     ''
   );
+}
+
+/* -----------------------------------
+ *
+ * ElementData
+ *
+ * -------------------------------- */
+
+function getElementData(element: Element | any) {
+  const textContent = (element.textContent || '').substring(0, textLimit);
 
   const eventData = [
     [params.title, 'click'],
-    [params.targetTag, getTagName(target)],
+    [params.targetTag, getTagName(element)],
     [params.targetText, textContent],
-    [params.targetClass, target.className],
-    [params.path, target.href],
-    [params.hierachy, pathValue],
+    [params.targetClass, element.className],
+    [params.path, element.href],
     [params.timeStamp, Date.now()],
   ];
+
+  return eventData;
+}
+
+/* -----------------------------------
+ *
+ * ClickEvent
+ *
+ * -------------------------------- */
+
+function onClickEvent(trackingId: string, event: PointerEvent | any) {
+  const target = event.target as Element;
+  const eventData = getElementData(target);
+
+  eventData.push([params.hierachy, getElementHierachy(event.path)]);
 
   track(trackingId, {
     type: 'click',
