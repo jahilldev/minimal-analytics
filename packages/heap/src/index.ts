@@ -135,6 +135,7 @@ function onClickEvent(trackingId: string, event: PointerEvent) {
     [params.title, 'click'],
     [params.targetTag, target.tagName?.toLowerCase()],
     [params.targetText, target.textContent],
+    [params.targetClass, target.className],
     [params.path, target.href],
     [params.hierachy, pathValue],
     [params.timeStamp, Date.now()],

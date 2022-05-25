@@ -19,7 +19,7 @@ const testClass = 'testClass';
 const testAnchor = `
   <section id="article">
     <main class="${testClass} ${testClass}">
-      <a href="${testLink}">${testTitle}</a>
+      <a href="${testLink}" class="${testClass}">${testTitle}</a>
     </main>
   </section>
 `;
@@ -121,7 +121,7 @@ describe('heap -> track()', () => {
   });
 
   it('sends a tracking request with DOM heirachy onClick', () => {
-    const params = ['t0=click', 'n0=a', `x0=${testTitle}`];
+    const params = ['t0=click', 'n0=a', `x0=${testTitle}`, `c0=${testClass}`];
 
     root.innerHTML = testAnchor;
 
