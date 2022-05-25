@@ -97,8 +97,27 @@ function getQueryParams(trackingId: string, { type, event, debug, error }: IProp
  *
  * -------------------------------- */
 
-function onClickEvent(event: Event, trackingId: string) {
-  console.log('click', { event, trackingId });
+function onClickEvent(trackingId: string, event: PointerEvent) {
+  const nodePath = (event as any).path.reverse() as Element[];
+
+  const classList = (className: string) =>
+    !className ? className : `.${className.split(' ').join(';.')};`;
+
+  const attrValue = (attribute: NamedNodeMap) => {
+    return '';
+  };
+
+  const pathValue = nodePath.reduce(
+    (result, element) =>
+      (result += `${[
+        `@${element.tagName.toLowerCase()};`,
+        classList(element.className),
+        attrValue(element.attributes),
+      ].join('')}|`),
+    ''
+  );
+
+  console.log('##### -> onClickEvent()', { trackingId, pathValue });
 }
 
 /* -----------------------------------
