@@ -118,6 +118,8 @@ describe('ga4 -> track()', () => {
 
     track(trackingId);
 
+    delete window.minimalAnalytics;
+
     expect(navigator.sendBeacon).toBeCalledTimes(1);
     expect(navigator.sendBeacon).toBeCalledWith(expect.stringContaining(testEndpoint));
   });
