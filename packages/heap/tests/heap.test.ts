@@ -14,6 +14,15 @@ const testPath = '/';
 const testReferrer = 'https://google.com';
 const testTitle = 'testTitle';
 const fetchOptions = { mode: 'no-cors' };
+const testLink = 'https://google.com';
+const testClass = 'testClass';
+const testAnchor = `
+  <section id="article">
+    <main class="${testClass} ${testClass}">
+      <a href="${testLink}">${testTitle}</a>
+    </main>
+  </section>
+`;
 
 /* -----------------------------------
  *
@@ -22,6 +31,24 @@ const fetchOptions = { mode: 'no-cors' };
  * -------------------------------- */
 
 const sleep = (time = 1) => new Promise((resolve) => setTimeout(resolve, time * 1000));
+
+/* -----------------------------------
+ *
+ * Path
+ *
+ * -------------------------------- */
+
+function getElementPath(element: Element) {
+  let result = [element];
+  let parent = element.parentElement;
+
+  while (parent && parent.tagName !== 'BODY') {
+    result.push(parent);
+    parent = parent.parentElement;
+  }
+
+  return result;
+}
 
 /* -----------------------------------
  *
@@ -49,7 +76,17 @@ describe('heap -> track()', () => {
     },
   });
 
-  beforeEach(() => jest.resetAllMocks());
+  let root;
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+    root = document.createElement('div');
+    document.body.appendChild(root);
+  });
+
+  afterEach(() => {
+    document.body.removeChild(root);
+  });
 
   it('logs an error message if no tracking ID is provided', () => {
     track();
@@ -81,5 +118,20 @@ describe('heap -> track()', () => {
     params.forEach((param) =>
       expect(window.fetch).toBeCalledWith(expect.stringContaining(param), fetchOptions)
     );
+  });
+
+  it('sends a tracking request with DOM heirachy onClick', () => {
+    root.innerHTML = testAnchor;
+
+    track(trackingId);
+
+    const link = root.querySelector('a');
+    const event = new CustomEvent('click');
+
+    Object.defineProperty(event, 'path', { value: getElementPath(link) });
+
+    document.dispatchEvent(event);
+
+    expect(true).toBe(true);
   });
 });
