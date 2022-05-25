@@ -24,12 +24,7 @@ declare global {
  * -------------------------------- */
 
 interface IProps {
-  type?: string;
   event?: Record<string, string | number>;
-  error?: {
-    message: string;
-    fatal: boolean;
-  };
 }
 
 /* -----------------------------------
@@ -43,7 +38,7 @@ const autoTrack = isBrowser && window.minimalAnalytics?.autoTrack;
 const analyticsEndpoint = 'https://heapanalytics.com/h';
 let eventsBound = false;
 let clickHandler = null;
-let eventCounter = 1;
+let eventCounter = 0;
 
 /* -----------------------------------
  *
@@ -65,7 +60,7 @@ function getArguments(args: any[]): [string, IProps] {
  *
  * -------------------------------- */
 
-function getQueryParams(trackingId: string, { type, event, error }: IProps) {
+function getQueryParams(trackingId: string, { event }: IProps) {
   const { hostname, referrer, title, pathname } = getDocument();
 
   const payload = {
@@ -136,14 +131,23 @@ function onClickEvent(trackingId: string, event: PointerEvent) {
     ''
   );
 
+  const eventData = [
+    [params.title, 'click'],
+    [params.targetTag, target.tagName?.toLowerCase()],
+    [params.targetText, target.textContent],
+    [params.path, target.href],
+    [params.hierachy, pathValue],
+    [params.timeStamp, Date.now()],
+  ];
+
   track(trackingId, {
-    event: {
-      [params.title + eventCounter]: 'click',
-      [params.targetTag + eventCounter]: target.tagName?.toLowerCase(),
-      [params.path + eventCounter]: target.href,
-      [params.hierachy + eventCounter]: pathValue,
-      [params.timeStamp + eventCounter]: Date.now(),
-    },
+    event: eventData.reduce(
+      (result, [param, value]) => ({
+        ...result,
+        [param + eventCounter]: value,
+      }),
+      {}
+    ),
   });
 
   eventCounter += 1;
@@ -175,7 +179,7 @@ function bindEvents(trackingId: string) {
 function track(trackingId: string, props?: IProps);
 function track(props?: IProps);
 function track(...args: any[]) {
-  const [trackingId, { type, event, error }] = getArguments(args);
+  const [trackingId, { event }] = getArguments(args);
 
   if (!trackingId) {
     console.error('Heap: Tracking ID is missing or undefined');
@@ -183,7 +187,7 @@ function track(...args: any[]) {
     return;
   }
 
-  const queryParams = getQueryParams(trackingId, { type, event, error });
+  const queryParams = getQueryParams(trackingId, { event });
 
   window.fetch(`${analyticsEndpoint}?${queryParams}`, {
     mode: 'no-cors',
