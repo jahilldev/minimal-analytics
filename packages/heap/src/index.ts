@@ -183,6 +183,29 @@ function getElementData(element: Element | any) {
     [params.timeStamp, Date.now()],
   ];
 
+  /* TODO
+  - Encode list of params "pp" & "sp" (?)
+  - Example below:
+      sp: r
+      sp: http://localhost:8080/articles/
+      sp: ts
+      sp: 1653495134162
+      sp: d
+      sp: localhost
+      sp: h
+      sp: /articles/
+      pp: d
+      pp: localhost
+      pp: h
+      pp: /articles/managing-third-party-scripts-performance/
+      pp: t
+      pp: Managing third party scripts - James Hill
+      pp: ts
+      pp: 1653495171266
+      pp: pr
+      pp: /articles/
+  */
+
   return eventData;
 }
 
