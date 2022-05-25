@@ -11,7 +11,7 @@ const analyticsEndpoint = 'https://www.google-analytics.com/g/collect';
 const analyticsVersion = '2';
 const errorTrackingId = 'GA4: Tracking ID is missing or undefined';
 const testTitle = 'testTitle';
-const testReferrer = 'https://google.com';
+const testUrl = 'https://google.com';
 const testLanguage = 'en-gb';
 const testColour = 32;
 const testWidth = 1600;
@@ -46,7 +46,7 @@ describe('ga4 -> track()', () => {
 
   Object.defineProperties(document, {
     referrer: {
-      value: testReferrer,
+      value: testUrl,
     },
     title: {
       value: testTitle,
@@ -83,7 +83,7 @@ describe('ga4 -> track()', () => {
       `tid=${trackingId}`,
       `ul=${testLanguage}`,
       'en=page_view',
-      `dr=${encodeURIComponent(testReferrer)}`,
+      `dr=${encodeURIComponent(testUrl)}`,
       `dt=${encodeURIComponent(testTitle)}`,
       `sd=${testColour}-bit`,
     ];
@@ -107,6 +107,19 @@ describe('ga4 -> track()', () => {
     params.forEach((param) =>
       expect(navigator.sendBeacon).toBeCalledWith(expect.stringContaining(param))
     );
+  });
+
+  it('uses the supplied analytics endpoint if defined on the window', () => {
+    const testEndpoint = `${testUrl}/collect/${Math.random()}`;
+
+    window.minimalAnalytics = {
+      analyticsEndpoint: testEndpoint,
+    };
+
+    track(trackingId);
+
+    expect(navigator.sendBeacon).toBeCalledTimes(1);
+    expect(navigator.sendBeacon).toBeCalledWith(expect.stringContaining(testEndpoint));
   });
 
   it('triggers a tracking event once when scroll is 90% of window', async () => {

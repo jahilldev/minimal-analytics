@@ -15,6 +15,7 @@ import {
 declare global {
   interface Window {
     minimalAnalytics?: {
+      analyticsEndpoint?: string;
       trackingId?: string;
       autoTrack?: boolean;
     };
@@ -279,8 +280,9 @@ function track(...args: any[]) {
   }
 
   const queryParams = getQueryParams(trackingId, { type, event, debug, error });
+  const endpoint = window.minimalAnalytics?.analyticsEndpoint || analyticsEndpoint;
 
-  navigator.sendBeacon(`${analyticsEndpoint}?${queryParams}`);
+  navigator.sendBeacon(`${endpoint}?${queryParams}`);
 
   bindEvents(trackingId);
 }
