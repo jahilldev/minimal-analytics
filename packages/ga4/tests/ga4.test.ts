@@ -11,7 +11,7 @@ const analyticsEndpoint = 'https://www.google-analytics.com/g/collect';
 const analyticsVersion = '2';
 const errorTrackingId = 'GA4: Tracking ID is missing or undefined';
 const testTitle = 'testTitle';
-const testReferrer = 'google.com';
+const testReferrer = 'https://google.com';
 const testLanguage = 'en-gb';
 const testColour = 32;
 const testWidth = 1600;
@@ -34,7 +34,6 @@ const sleep = (time = 1) => new Promise((resolve) => setTimeout(resolve, time * 
  * -------------------------------- */
 
 Object.defineProperty(navigator, 'sendBeacon', { value: jest.fn() });
-global.document = Object.create(document);
 
 /* -----------------------------------
  *
@@ -84,8 +83,8 @@ describe('ga4 -> track()', () => {
       `tid=${trackingId}`,
       `ul=${testLanguage}`,
       'en=page_view',
-      `dr=${testReferrer}`,
-      `dt=${testTitle}`,
+      `dr=${encodeURIComponent(testReferrer)}`,
+      `dt=${encodeURIComponent(testTitle)}`,
       `sd=${testColour}-bit`,
     ];
 

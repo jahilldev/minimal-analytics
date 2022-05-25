@@ -42,6 +42,7 @@ const isBrowser = typeof window !== 'undefined';
 const autoTrack = isBrowser && window.minimalAnalytics?.autoTrack;
 const analyticsEndpoint = 'https://heapanalytics.com/h';
 let eventsBound = false;
+let clickHandler = null;
 
 /* -----------------------------------
  *
@@ -91,6 +92,16 @@ function getQueryParams(trackingId: string, { type, event, debug, error }: IProp
 
 /* -----------------------------------
  *
+ * ClickEvent
+ *
+ * -------------------------------- */
+
+function onClickEvent(event: Event, trackingId: string) {
+  console.log('click', { event, trackingId });
+}
+
+/* -----------------------------------
+ *
  * BindEvent
  *
  * -------------------------------- */
@@ -100,7 +111,10 @@ function bindEvents(trackingId: string) {
     return;
   }
 
-  document.addEventListener('click', () => {});
+  eventsBound = true;
+  clickHandler = onClickEvent.bind(null, trackingId);
+
+  document.addEventListener('click', clickHandler);
 }
 
 /* -----------------------------------
