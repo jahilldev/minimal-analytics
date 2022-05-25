@@ -8,7 +8,7 @@ This is intended for those who want to minimize the impact of third-party JavaSc
 
 # Getting Started
 
-**N.B.** The instructions below assume a Node environment is available. If you're not running or building your application in a Node environment, jump to the [CDN section](#cdn).
+**N.B.** The instructions below assume a Node environment is available. If you're not running or building your application in Node, jump to the [CDN section](#cdn).
 
 Install with Yarn:
 
