@@ -94,6 +94,27 @@ function getQueryParams(trackingId: string, { type, event, error }: IProps) {
 
 /* -----------------------------------
  *
+ * AttributeValue
+ *
+ * -------------------------------- */
+
+function getAttributeValue(attributes: NamedNodeMap) {
+  const { href } = Object.assign(
+    {},
+    ...Array.from(attributes, ({ name, value }) => ({ [name]: value }))
+  );
+
+  let result = '';
+
+  if (href) {
+    result = `[href=${href}];`;
+  }
+
+  return result;
+}
+
+/* -----------------------------------
+ *
  * ClickEvent
  *
  * -------------------------------- */
@@ -105,27 +126,12 @@ function onClickEvent(trackingId: string, event: PointerEvent) {
   const classList = (className: string) =>
     !className ? className : `.${className.split(' ').join(';.')};`;
 
-  const attrValue = (attributes: NamedNodeMap) => {
-    const { href } = Object.assign(
-      {},
-      ...Array.from(attributes, ({ name, value }) => ({ [name]: value }))
-    );
-
-    let result = '';
-
-    if (href) {
-      result = `[href=${href}];`;
-    }
-
-    return result;
-  };
-
   const pathValue = nodePath.reduce(
     (result, element) =>
       (result += `${[
         `@${element.tagName.toLowerCase()};`,
         classList(element.className),
-        attrValue(element.attributes),
+        getAttributeValue(element.attributes),
       ].join('')}|`),
     ''
   );
