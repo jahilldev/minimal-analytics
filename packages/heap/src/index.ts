@@ -103,7 +103,16 @@ function onClickEvent(trackingId: string, event: PointerEvent) {
   const classList = (className: string) =>
     !className ? className : `.${className.split(' ').join(';.')};`;
 
-  const attrValue = (attribute: NamedNodeMap) => {
+  const attrValue = (attributes: NamedNodeMap) => {
+    const { href } = Object.assign(
+      {},
+      ...Array.from(attributes, ({ name, value }) => ({ [name]: value }))
+    );
+
+    if (href) {
+      return `[href=${href}];`;
+    }
+
     return '';
   };
 
