@@ -36,6 +36,7 @@ interface IProps {
 const isBrowser = typeof window !== 'undefined';
 const autoTrack = isBrowser && window.minimalAnalytics?.autoTrack;
 const analyticsEndpoint = 'https://heapanalytics.com/h';
+const textLimit = 64;
 let eventsBound = false;
 let clickHandler = null;
 let eventCounter = 0;
@@ -134,7 +135,7 @@ function onClickEvent(trackingId: string, event: PointerEvent) {
   const eventData = [
     [params.title, 'click'],
     [params.targetTag, target.tagName?.toLowerCase()],
-    [params.targetText, target.textContent],
+    [params.targetText, target.textContent.substring(0, textLimit)],
     [params.targetClass, target.className],
     [params.path, target.href],
     [params.hierachy, pathValue],
