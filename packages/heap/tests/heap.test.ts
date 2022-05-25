@@ -121,6 +121,8 @@ describe('heap -> track()', () => {
   });
 
   it('sends a tracking request with DOM heirachy onClick', () => {
+    const params = ['t0=click', 'n0=a', `x0=${testTitle}`];
+
     root.innerHTML = testAnchor;
 
     track(trackingId);
@@ -133,6 +135,10 @@ describe('heap -> track()', () => {
 
     document.dispatchEvent(event);
 
-    expect(true).toBe(true);
+    expect(window.fetch).toBeCalledTimes(2);
+
+    params.forEach((param) =>
+      expect(window.fetch).toBeCalledWith(expect.stringContaining(param), fetchOptions)
+    );
   });
 });
