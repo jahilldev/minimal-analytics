@@ -128,6 +128,7 @@ describe('heap -> track()', () => {
     const link = root.querySelector('a');
     const event = new CustomEvent('click');
 
+    Object.defineProperty(event, 'target', { value: link });
     Object.defineProperty(event, 'path', { value: getElementPath(link) });
 
     document.dispatchEvent(event);

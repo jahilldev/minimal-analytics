@@ -26,7 +26,6 @@ declare global {
 interface IProps {
   type?: string;
   event?: Record<string, string | number>;
-  debug?: boolean;
   error?: {
     message: string;
     fatal: boolean;
@@ -44,6 +43,7 @@ const autoTrack = isBrowser && window.minimalAnalytics?.autoTrack;
 const analyticsEndpoint = 'https://heapanalytics.com/h';
 let eventsBound = false;
 let clickHandler = null;
+let eventCounter = 1;
 
 /* -----------------------------------
  *
@@ -65,7 +65,7 @@ function getArguments(args: any[]): [string, IProps] {
  *
  * -------------------------------- */
 
-function getQueryParams(trackingId: string, { type, event, debug, error }: IProps) {
+function getQueryParams(trackingId: string, { type, event, error }: IProps) {
   const { hostname, referrer, title, pathname } = getDocument();
 
   const payload = {
@@ -81,6 +81,7 @@ function getQueryParams(trackingId: string, { type, event, debug, error }: IProp
     [params.previousPage]: referrer,
     [params.timeStamp]: `${Date.now()}`,
     [params.sentTime]: `${Date.now()}`,
+    ...(event && { ...event }),
     b: 'web',
     sp: 'r', // ?
     z: '2', // ?
@@ -98,6 +99,7 @@ function getQueryParams(trackingId: string, { type, event, debug, error }: IProp
  * -------------------------------- */
 
 function onClickEvent(trackingId: string, event: PointerEvent) {
+  const target = event.target as any;
   const nodePath = (event as any).path.reverse() as Element[];
 
   const classList = (className: string) =>
@@ -109,11 +111,13 @@ function onClickEvent(trackingId: string, event: PointerEvent) {
       ...Array.from(attributes, ({ name, value }) => ({ [name]: value }))
     );
 
+    let result = '';
+
     if (href) {
-      return `[href=${href}];`;
+      result = `[href=${href}];`;
     }
 
-    return '';
+    return result;
   };
 
   const pathValue = nodePath.reduce(
@@ -126,7 +130,17 @@ function onClickEvent(trackingId: string, event: PointerEvent) {
     ''
   );
 
-  console.log('##### -> onClickEvent()', { trackingId, pathValue });
+  track(trackingId, {
+    event: {
+      [params.title + eventCounter]: 'click',
+      [params.targetTag + eventCounter]: target.tagName?.toLowerCase(),
+      [params.path + eventCounter]: target.href,
+      [params.hierachy + eventCounter]: pathValue,
+      [params.timeStamp + eventCounter]: Date.now(),
+    },
+  });
+
+  eventCounter += 1;
 }
 
 /* -----------------------------------
@@ -155,7 +169,7 @@ function bindEvents(trackingId: string) {
 function track(trackingId: string, props?: IProps);
 function track(props?: IProps);
 function track(...args: any[]) {
-  const [trackingId, { type, event, debug, error }] = getArguments(args);
+  const [trackingId, { type, event, error }] = getArguments(args);
 
   if (!trackingId) {
     console.error('Heap: Tracking ID is missing or undefined');
@@ -163,7 +177,7 @@ function track(...args: any[]) {
     return;
   }
 
-  const queryParams = getQueryParams(trackingId, { type, event, debug, error });
+  const queryParams = getQueryParams(trackingId, { type, event, error });
 
   window.fetch(`${analyticsEndpoint}?${queryParams}`, {
     mode: 'no-cors',
