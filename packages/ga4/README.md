@@ -8,7 +8,7 @@ This is intended for those who want to minimize the impact of third-party JavaSc
 
 # Getting Started
 
-**N.B.** The instructions below assume a Node environment is available. If you're not running or building your application in a Node environment, jump to the [CDN section](#cdn). 
+**N.B.** The instructions below assume a Node environment is available. If you're not running or building your application in a Node environment, jump to the [CDN section](#cdn).
 
 Install with Yarn:
 
@@ -59,8 +59,6 @@ To call `track` without a tracking ID, it must be defined on the window via `tra
 
 The default event type of `page_view` can be overriden by providing the relevant argument to the `track` function. The interface for this [can be found here](https://github.com/jahilldev/minimal-analytics/blob/main/packages/ga4/src/index.ts#L24).
 
-
-
 ```ts
 // "type" and "event" can contain anything
 track({ type: 'user_signup', event: { 'user.id': 12345 });
@@ -78,6 +76,18 @@ window.minimalAnalytics = {
 ```
 
 Once the `ga4` script has loaded, `track` will automatically be called with the tracking ID defined above. You _must_ ensure both `trackingId` and `autoTrack` are properly defined for this to work.
+
+## Endpoint
+
+If you need to define your own collection endpoint, to proxy or record values yourself, you can use the following property:
+
+```js
+window.minimalAnalytics = {
+  analyticsEndpoint: '/collect', // <-- your endpoint
+};
+```
+
+This value will supercede the default Google Analytics endpoint if defined.
 
 # CDN
 
