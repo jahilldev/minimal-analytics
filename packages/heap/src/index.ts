@@ -64,20 +64,8 @@ function getArguments(args: any[]): [string, IProps] {
  * -------------------------------- */
 
 function getQueryParams(trackingId: string, { event }: IProps) {
-  const { hostname, referrer, title, pathname } = getDocument();
-
-  const detail = [
-    [param.title, title],
-    [param.path, pathname],
-    [param.referrer, referrer],
-    [param.previousPage, referrer],
-    [param.timeStamp, `${Date.now()}`],
-    ['z', '2'], // ?
-  ];
-
   let payload = [
     [param.appId, trackingId],
-    [param.domain, hostname],
     [param.version, '4.0'],
     [param.userId, getClientId()],
     [param.sessionId, getSessionId()],
@@ -87,10 +75,66 @@ function getQueryParams(trackingId: string, { event }: IProps) {
     ['sp', 'r'],
   ];
 
-  payload = payload.concat(event ? event : detail);
+  payload = payload.concat(getPageData(!!event));
+  payload = payload.concat(event ? event : []);
+
   payload.forEach(([, value], index) => value || delete payload[index]);
 
   return new URLSearchParams(payload);
+}
+
+/* -----------------------------------
+ *
+ * PageData
+ *
+ * -------------------------------- */
+
+function getPageData(isEvent: boolean) {
+  const { hostname, referrer, title, pathname } = getDocument();
+
+  let payload = [
+    [param.domain, hostname],
+    [param.title, title],
+    [param.path, pathname],
+    [param.referrer, referrer],
+    [param.previousPage, referrer],
+    [param.timeStamp, `${Date.now()}`],
+    ['z', '2'], // ?
+  ];
+
+  /* TODO
+  - Encode list of params "pp" & "sp" (?) if event
+  - Example below:
+      sp: r (detail)
+      sp: http://localhost:8080/articles/
+      sp: ts (detail)
+      sp: 1653495134162
+      sp: d (payload)
+      sp: localhost
+      sp: h (detail)
+      sp: /articles/
+      pp: d
+      pp: localhost
+      pp: h
+      pp: /articles/managing-third-party-scripts-performance/
+      pp: t
+      pp: Managing third party scripts - James Hill
+      pp: ts
+      pp: 1653495171266
+      pp: pr
+      pp: /articles/
+  */
+
+  if (isEvent) {
+    payload = [].concat(
+      ...payload.map(([key, value]) => [
+        [param.pageParam, key],
+        [param.pageParam, value],
+      ])
+    );
+  }
+
+  return payload;
 }
 
 /* -----------------------------------
@@ -190,29 +234,6 @@ function getElementData(element: Element | any): string[][] {
 function onClickEvent(trackingId: string, event: PointerEvent | any) {
   const target = event.target as Element;
   const eventData = getElementData(target);
-
-  /* TODO
-  - Encode list of params "pp" & "sp" (?)
-  - Example below:
-      sp: r
-      sp: http://localhost:8080/articles/
-      sp: ts
-      sp: 1653495134162
-      sp: d
-      sp: localhost
-      sp: h
-      sp: /articles/
-      pp: d
-      pp: localhost
-      pp: h
-      pp: /articles/managing-third-party-scripts-performance/
-      pp: t
-      pp: Managing third party scripts - James Hill
-      pp: ts
-      pp: 1653495171266
-      pp: pr
-      pp: /articles/
-  */
 
   eventData.push([param.hierachy, getElementHierachy(event.path)]);
 
