@@ -4,7 +4,7 @@
  *
  * -------------------------------- */
 
-const params = {
+const param = {
   appId: 'a',
   targetClass: 'c',
   domain: 'd',
@@ -41,4 +41,4 @@ const params = {
  *
  * -------------------------------- */
 
-export { params };
+export { param };
