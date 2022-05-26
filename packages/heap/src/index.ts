@@ -66,7 +66,7 @@ function getArguments(args: any[]): [string, IProps] {
 function getQueryParams(trackingId: string, { event }: IProps) {
   const { hostname, referrer, title, pathname } = getDocument();
 
-  let payload = {
+  const payload = {
     [params.appId]: trackingId,
     [params.domain]: hostname,
     [params.version]: '4.0',
