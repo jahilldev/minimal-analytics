@@ -1,5 +1,8 @@
 import {
   debounce,
+  clientKey,
+  sessionKey,
+  counterKey,
   getDocument,
   getClientId,
   getSessionId,
@@ -46,9 +49,6 @@ interface IProps {
 
 const isBrowser = typeof window !== 'undefined';
 const autoTrack = isBrowser && window.minimalAnalytics?.autoTrack;
-const clientKey = '_gacid';
-const sessionKey = '_gasid';
-const counterKey = '_gasct';
 const analyticsEndpoint = 'https://www.google-analytics.com/g/collect';
 const searchTerms = ['q', 's', 'search', 'query', 'keyword'];
 let eventsBound = false;
@@ -167,7 +167,7 @@ function getQueryParams(trackingId: string, { type, event, debug, error }: IProp
   const payload = {
     v: '2', // v2 for GA4
     tid: trackingId,
-    _p: getSessionId('_gapid'),
+    _p: getSessionId('pId'),
     ul: (navigator.language || '').toLowerCase() || void 0,
     cid: getClientId(),
     _fv: firstVisit,

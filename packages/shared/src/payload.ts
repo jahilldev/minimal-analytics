@@ -8,6 +8,7 @@ import { getRandomId } from './utility';
 
 const clientKey = 'clientId';
 const sessionKey = 'sessionId';
+const counterKey = 'sessionCount';
 
 /* -----------------------------------
  *
@@ -67,4 +68,4 @@ function getSessionId(key = sessionKey) {
  *
  * -------------------------------- */
 
-export { getDocument, getClientId, getSessionId };
+export { clientKey, sessionKey, counterKey, getDocument, getClientId, getSessionId };
