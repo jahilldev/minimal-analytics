@@ -1,4 +1,5 @@
 import { track } from '../src/index';
+import { param } from '../src/model';
 
 /* -----------------------------------
  *
@@ -101,7 +102,7 @@ describe('heap -> track()', () => {
     expect(window.fetch).toBeCalledTimes(1);
   });
 
-  it('defines the correct query params when sending a default page view', () => {
+  it('defines the correct query params when sending a default page view request', () => {
     const params = [
       analyticsEndpoint,
       `a=${trackingId}`,
@@ -120,8 +121,21 @@ describe('heap -> track()', () => {
     );
   });
 
-  it('sends a tracking request with DOM heirachy onClick', () => {
-    const params = ['t0=click', 'n0=a', `x0=${testTitle}`, `c0=${testClass}`];
+  it('defines the correct query params when sending a click event request', () => {
+    const params = [
+      analyticsEndpoint,
+      `${param.appId}=${trackingId}`,
+      `${param.pageParam}=${param.domain}`,
+      `${param.pageParam}=${testDomain}`,
+      `${param.pageParam}=${param.path}`,
+      `${param.pageParam}=${encodeURIComponent(testPath)}`,
+      `${param.pageParam}=${param.referrer}`,
+      `${param.pageParam}=${encodeURIComponent(testReferrer)}`,
+      `${param.title}0=click`,
+      `${param.targetTag}0=a`,
+      `${param.targetText}0=${testTitle}`,
+      `${param.targetClass}0=${testClass}`,
+    ];
 
     root.innerHTML = testAnchor;
 
