@@ -147,13 +147,14 @@ function getElementHierachy(path: Element[]) {
     return !!tagName && !blockedTags.includes(tagName.toLowerCase());
   });
 
+  const getHeirachy = (element: Element) => [
+    `@${getTagName(element)};`,
+    getClassList(element.className),
+    getAttributeValue(element.attributes),
+  ];
+
   return nodePath.reduce(
-    (result, element) =>
-      (result += `${[
-        `@${getTagName(element)};`,
-        getClassList(element.className),
-        getAttributeValue(element.attributes),
-      ].join('')}|`),
+    (result, element) => (result += `${getHeirachy(element).join('')}|`),
     ''
   );
 }
@@ -175,6 +176,19 @@ function getElementData(element: Element | any) {
     [params.path, element.href],
     [params.timeStamp, Date.now()],
   ];
+
+  return eventData;
+}
+
+/* -----------------------------------
+ *
+ * ClickEvent
+ *
+ * -------------------------------- */
+
+function onClickEvent(trackingId: string, event: PointerEvent | any) {
+  const target = event.target as Element;
+  const eventData = getElementData(target);
 
   /* TODO
   - Encode list of params "pp" & "sp" (?)
@@ -198,19 +212,6 @@ function getElementData(element: Element | any) {
       pp: pr
       pp: /articles/
   */
-
-  return eventData;
-}
-
-/* -----------------------------------
- *
- * ClickEvent
- *
- * -------------------------------- */
-
-function onClickEvent(trackingId: string, event: PointerEvent | any) {
-  const target = event.target as Element;
-  const eventData = getElementData(target);
 
   eventData.push([params.hierachy, getElementHierachy(event.path)]);
 
