@@ -1,4 +1,4 @@
-import { clientKey, sessionKey } from '@minimal-analytics/shared';
+import { clientKey, counterKey, sessionKey } from '@minimal-analytics/shared';
 import { track } from '../src/index';
 
 /* -----------------------------------
@@ -101,18 +101,21 @@ describe('ga4 -> track()', () => {
   it('correctly defines a users first visit when tracking is called ', () => {
     localStorage.removeItem(clientKey);
     sessionStorage.removeItem(sessionKey);
+    sessionStorage.removeItem(counterKey);
 
     track(trackingId);
 
     expect(navigator.sendBeacon).toBeCalledTimes(1);
     expect(navigator.sendBeacon).toBeCalledWith(expect.stringContaining('_fv=1'));
     expect(navigator.sendBeacon).toBeCalledWith(expect.stringContaining('_ss=1'));
+    expect(navigator.sendBeacon).toBeCalledWith(expect.stringContaining('sct=1'));
 
     track(trackingId);
 
     expect(navigator.sendBeacon).toBeCalledTimes(2);
     expect(navigator.sendBeacon).not.nthCalledWith(2, expect.stringContaining('_fv=1'));
     expect(navigator.sendBeacon).not.nthCalledWith(2, expect.stringContaining('_ss=1'));
+    expect(navigator.sendBeacon).toBeCalledWith(expect.stringContaining('sct=1'));
   });
 
   it('defines the correct query param when sending a custom event', () => {

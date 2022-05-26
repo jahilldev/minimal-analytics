@@ -90,12 +90,13 @@ function getSessionCount(key = counterKey) {
 function getSessionState(firstEvent: boolean) {
   const firstVisit = !localStorage.getItem(clientKey) ? '1' : void 0;
   const sessionStart = !sessionStorage.getItem(sessionKey) ? '1' : void 0;
+  let sessionCount = sessionStorage.getItem(counterKey) || '1';
 
-  if (!firstEvent) {
-    return {};
+  if (firstEvent) {
+    sessionCount = getSessionCount();
   }
 
-  return { firstVisit, sessionStart, sessionCount: getSessionCount() };
+  return { firstVisit, sessionStart, sessionCount };
 }
 
 /* -----------------------------------

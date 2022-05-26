@@ -52,6 +52,7 @@ const isBrowser = typeof window !== 'undefined';
 const autoTrack = isBrowser && window.minimalAnalytics?.autoTrack;
 const analyticsEndpoint = 'https://www.google-analytics.com/g/collect';
 const searchTerms = ['q', 's', 'search', 'query', 'keyword'];
+let trackCalled = false;
 let eventsBound = false;
 let scrollHandler = null;
 let unloadHandler = null;
@@ -143,7 +144,7 @@ function getDeviceMeta() {
 
 function getQueryParams(trackingId: string, { type, event, debug, error }: IProps) {
   const { location, referrer, title } = getDocument();
-  const { firstVisit, sessionStart, sessionCount } = getSessionState(eventKeys.pageView === type);
+  const { firstVisit, sessionStart, sessionCount } = getSessionState(!trackCalled);
 
   const payload = {
     v: '2', // v2 for GA4
@@ -264,6 +265,8 @@ function track(...args: any[]) {
   const endpoint = window.minimalAnalytics?.analyticsEndpoint || analyticsEndpoint;
 
   navigator.sendBeacon(`${endpoint}?${queryParams}`);
+
+  trackCalled = true;
 
   bindEvents(trackingId);
 }
