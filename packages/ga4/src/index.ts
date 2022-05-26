@@ -6,6 +6,7 @@ import {
   getDocument,
   getClientId,
   getSessionId,
+  getSessionState,
   getScrollPercentage,
 } from '@minimal-analytics/shared';
 
@@ -85,25 +86,6 @@ function getArguments(args: any[]): [string, IProps] {
 
 /* -----------------------------------
  *
- * SessionCount
- *
- * -------------------------------- */
-
-function getSessionCount(key = counterKey) {
-  let sessionCount = '1';
-  const storedValue = sessionStorage.getItem(key);
-
-  if (storedValue) {
-    sessionCount = `${+storedValue + 1}`;
-  }
-
-  sessionStorage.setItem(key, sessionCount);
-
-  return sessionCount;
-}
-
-/* -----------------------------------
- *
  * EventMeta
  *
  * -------------------------------- */
@@ -161,8 +143,7 @@ function getDeviceMeta() {
 
 function getQueryParams(trackingId: string, { type, event, debug, error }: IProps) {
   const { location, referrer, title } = getDocument();
-  const firstVisit = !localStorage.getItem(clientKey) ? '1' : void 0;
-  const sessionStart = !sessionStorage.getItem(sessionKey) ? '1' : void 0;
+  const { firstVisit, sessionStart, sessionCount } = getSessionState(eventKeys.pageView === type);
 
   const payload = {
     v: '2', // v2 for GA4
@@ -173,7 +154,7 @@ function getQueryParams(trackingId: string, { type, event, debug, error }: IProp
     _fv: firstVisit,
     _s: '1',
     sid: getSessionId(),
-    sct: getSessionCount(),
+    sct: sessionCount,
     seg: '1',
     _ss: sessionStart,
     _dbg: debug ? '1' : void 0,

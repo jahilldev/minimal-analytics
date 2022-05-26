@@ -64,8 +64,52 @@ function getSessionId(key = sessionKey) {
 
 /* -----------------------------------
  *
+ * SessionCount
+ *
+ * -------------------------------- */
+
+function getSessionCount(key = counterKey) {
+  let sessionCount = '1';
+  const storedValue = sessionStorage.getItem(key);
+
+  if (storedValue) {
+    sessionCount = `${+storedValue + 1}`;
+  }
+
+  sessionStorage.setItem(key, sessionCount);
+
+  return sessionCount;
+}
+
+/* -----------------------------------
+ *
+ * SessionState
+ *
+ * -------------------------------- */
+
+function getSessionState(firstEvent: boolean) {
+  const firstVisit = !localStorage.getItem(clientKey) ? '1' : void 0;
+  const sessionStart = !sessionStorage.getItem(sessionKey) ? '1' : void 0;
+
+  if (!firstEvent) {
+    return {};
+  }
+
+  return { firstVisit, sessionStart, sessionCount: getSessionCount() };
+}
+
+/* -----------------------------------
+ *
  * Export
  *
  * -------------------------------- */
 
-export { clientKey, sessionKey, counterKey, getDocument, getClientId, getSessionId };
+export {
+  clientKey,
+  sessionKey,
+  counterKey,
+  getDocument,
+  getClientId,
+  getSessionId,
+  getSessionState,
+};
