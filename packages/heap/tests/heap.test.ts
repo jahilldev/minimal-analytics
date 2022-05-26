@@ -152,7 +152,7 @@ describe('heap -> track()', () => {
     expect(window.fetch).toBeCalledTimes(2);
 
     params.forEach((param) =>
-      expect(window.fetch).toBeCalledWith(expect.stringContaining(param), fetchOptions)
+      expect(window.fetch).nthCalledWith(2, expect.stringContaining(param), fetchOptions)
     );
   });
 });
