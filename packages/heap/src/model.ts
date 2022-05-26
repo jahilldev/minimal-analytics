@@ -26,6 +26,8 @@ const param = {
   sentTime: 'st',
   viewId: 'v',
   previousPage: 'pr',
+  sessionParam: 'sp',
+  pageParam: 'pp',
   utm: {
     source: 'us',
     medium: 'um',
