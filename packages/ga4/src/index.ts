@@ -161,8 +161,8 @@ function getDeviceMeta() {
 
 function getQueryParams(trackingId: string, { type, event, debug, error }: IProps) {
   const { location, referrer, title } = getDocument();
-  const firstVisit = localStorage.getItem(clientKey) ? '1' : void 0;
-  const sessionStart = sessionStorage.getItem(sessionKey) ? '1' : void 0;
+  const firstVisit = !localStorage.getItem(clientKey) ? '1' : void 0;
+  const sessionStart = !sessionStorage.getItem(sessionKey) ? '1' : void 0;
 
   const payload = {
     v: '2', // v2 for GA4
