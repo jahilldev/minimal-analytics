@@ -63,7 +63,7 @@ function getArguments(args: any[]): [string, IProps] {
  *
  * -------------------------------- */
 
-function getQueryParams(trackingId: string, { type, event }: IProps) {
+function getQueryParams(trackingId: string, { event }: IProps) {
   const { hostname, referrer, title, pathname } = getDocument();
 
   let payload = {
@@ -76,26 +76,16 @@ function getQueryParams(trackingId: string, { type, event }: IProps) {
     [params.sentTime]: `${Date.now()}`,
     b: 'web',
     sp: 'r', // ?
-  };
-
-  if (type === 'view') {
-    payload = {
-      ...payload,
+    ...(event && { ...event }),
+    ...(!event && {
       [params.title]: title,
       [params.path]: pathname,
       [params.referrer]: referrer,
       [params.previousPage]: referrer,
       [params.timeStamp]: `${Date.now()}`,
       z: '2', // ?
-    };
-  }
-
-  if (type === 'click') {
-    payload = {
-      ...payload,
-      ...event,
-    };
-  }
+    }),
+  };
 
   Object.keys(payload).forEach((key) => payload[key] || delete payload[key]);
 
@@ -109,9 +99,12 @@ function getQueryParams(trackingId: string, { type, event }: IProps) {
  * -------------------------------- */
 
 function getAttributeValue(attributes: NamedNodeMap | undefined) {
-  const { href } = Object.assign(
-    {},
-    ...Array.from(attributes || [], ({ name, value }) => ({ [name]: value }))
+  const { href } = Array.from(attributes || []).reduce(
+    (result, { name, value }) => ({
+      ...result,
+      [name]: value,
+    }),
+    {} as Record<string, string>
   );
 
   let result = '';
