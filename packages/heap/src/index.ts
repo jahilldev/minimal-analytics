@@ -1,5 +1,5 @@
 import { getDocument, getRandomId, getClientId, getSessionId } from '@minimal-analytics/shared';
-import { params } from './model';
+import { param } from './model';
 
 /* -----------------------------------
  *
@@ -25,7 +25,7 @@ declare global {
 
 interface IProps {
   type?: string;
-  event?: Record<string, string>;
+  event?: string[][];
 }
 
 /* -----------------------------------
@@ -66,28 +66,29 @@ function getArguments(args: any[]): [string, IProps] {
 function getQueryParams(trackingId: string, { event }: IProps) {
   const { hostname, referrer, title, pathname } = getDocument();
 
-  const payload = {
-    [params.appId]: trackingId,
-    [params.domain]: hostname,
-    [params.version]: '4.0',
-    [params.userId]: getClientId(),
-    [params.sessionId]: getSessionId(),
-    [params.viewId]: getRandomId(),
-    [params.sentTime]: `${Date.now()}`,
-    b: 'web',
-    sp: 'r', // ?
-    ...(event && { ...event }),
-    ...(!event && {
-      [params.title]: title,
-      [params.path]: pathname,
-      [params.referrer]: referrer,
-      [params.previousPage]: referrer,
-      [params.timeStamp]: `${Date.now()}`,
-      z: '2', // ?
-    }),
-  };
+  const detail = [
+    [param.title, title],
+    [param.path, pathname],
+    [param.referrer, referrer],
+    [param.previousPage, referrer],
+    [param.timeStamp, `${Date.now()}`],
+    ['z', '2'], // ?
+  ];
 
-  Object.keys(payload).forEach((key) => payload[key] || delete payload[key]);
+  let payload = [
+    [param.appId, trackingId],
+    [param.domain, hostname],
+    [param.version, '4.0'],
+    [param.userId, getClientId()],
+    [param.sessionId, getSessionId()],
+    [param.viewId, getRandomId()],
+    [param.sentTime, `${Date.now()}`],
+    ['b', 'web'],
+    ['sp', 'r'],
+  ];
+
+  payload = payload.concat(event ? event : detail);
+  payload.forEach(([, value], index) => value || delete payload[index]);
 
   return new URLSearchParams(payload);
 }
@@ -165,16 +166,16 @@ function getElementHierachy(path: Element[]) {
  *
  * -------------------------------- */
 
-function getElementData(element: Element | any) {
+function getElementData(element: Element | any): string[][] {
   const textContent = (element.textContent || '').substring(0, textLimit);
 
   const eventData = [
-    [params.title, 'click'],
-    [params.targetTag, getTagName(element)],
-    [params.targetText, textContent],
-    [params.targetClass, element.className],
-    [params.path, element.href],
-    [params.timeStamp, Date.now()],
+    [param.title, 'click'],
+    [param.targetTag, getTagName(element)],
+    [param.targetText, textContent],
+    [param.targetClass, element.className],
+    [param.path, element.href],
+    [param.timeStamp, Date.now()],
   ];
 
   return eventData;
@@ -213,17 +214,11 @@ function onClickEvent(trackingId: string, event: PointerEvent | any) {
       pp: /articles/
   */
 
-  eventData.push([params.hierachy, getElementHierachy(event.path)]);
+  eventData.push([param.hierachy, getElementHierachy(event.path)]);
 
   track(trackingId, {
     type: 'click',
-    event: eventData.reduce(
-      (result, [param, value]) => ({
-        ...result,
-        [param + eventCounter]: value,
-      }),
-      {}
-    ),
+    event: eventData.map(([param, value]) => [param + eventCounter, value]),
   });
 
   eventCounter += 1;
