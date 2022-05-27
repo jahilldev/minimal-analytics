@@ -98,8 +98,6 @@ const config = ({ mode }): Configuration[] =>
     ],
     optimization: {
       usedExports: true,
-      mergeDuplicateChunks: true,
-      moduleIds: 'deterministic',
     },
     ...config,
   }));

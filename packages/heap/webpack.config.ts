@@ -96,6 +96,9 @@ const config = ({ mode }): Configuration[] =>
         __DEV__: mode === 'development',
       }),
     ],
+    optimization: {
+      usedExports: true,
+    },
     ...config,
   }));
 
