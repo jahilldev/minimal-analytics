@@ -1,14 +1,13 @@
 import {
   debounce,
-  clientKey,
-  sessionKey,
-  counterKey,
   getDocument,
   getClientId,
   getSessionId,
   getSessionState,
   getScrollPercentage,
+  getHash,
 } from '@minimal-analytics/shared';
+import { param } from './model';
 
 /* -----------------------------------
  *
@@ -34,7 +33,7 @@ declare global {
 
 interface IProps {
   type?: string;
-  event?: Record<string, string | number>;
+  event?: Record<string, number>;
   debug?: boolean;
   error?: {
     message: string;
@@ -102,38 +101,16 @@ function getEventMeta({ type, event }: Pick<IProps, 'type' | 'event'>) {
   const eventName = searchResults ? eventKeys.viewSearchResults : type;
   const searchTerm = searchTerms.find((term) => searchParams.get(term));
 
-  return {
-    en: eventName,
-    'ep.search_term': searchTerm,
-    ...(event && { ...event }),
-  };
-}
+  let payload = [
+    [param.eventName, eventName],
+    [`${param.eventParam}search_term`, searchTerm],
+  ];
 
-/* -----------------------------------
- *
- * Device
- *
- * -------------------------------- */
-
-function getDeviceMeta() {
-  let screenSize = `${(self.screen || {}).width}x${(self.screen || {}).height}`;
-  let colourDepth;
-  let viewPort;
-
-  const visual = {
-    width: Math.floor((self.visualViewport || {}).width),
-    height: Math.floor((self.visualViewport || {}).height),
-  };
-
-  if (screen.colorDepth) {
-    colourDepth = `${screen.colorDepth}-bit`;
+  if (event) {
+    payload = payload.concat(Object.keys(event).map((key) => [key, `${event[key]}`]));
   }
 
-  if (self.visualViewport) {
-    viewPort = `${visual.width}x${visual.height}`;
-  }
-
-  return { sd: colourDepth, sr: screenSize, vp: viewPort };
+  return payload;
 }
 
 /* -----------------------------------
@@ -142,32 +119,33 @@ function getDeviceMeta() {
  *
  * -------------------------------- */
 
-function getQueryParams(trackingId: string, { type, event, debug, error }: IProps) {
+function getQueryParams(trackingId: string, { type, event, debug }: IProps) {
   const { location, referrer, title } = getDocument();
   const { firstVisit, sessionStart, sessionCount } = getSessionState(!trackCalled);
+  const screen = self.screen || ({} as Screen);
 
-  const payload = {
-    v: '2', // v2 for GA4
-    tid: trackingId,
-    _p: getSessionId('pId'),
-    ul: (navigator.language || '').toLowerCase() || void 0,
-    cid: getClientId(),
-    _fv: firstVisit,
-    _s: '1',
-    sid: getSessionId(),
-    sct: sessionCount,
-    seg: '1',
-    _ss: sessionStart,
-    _dbg: debug ? '1' : void 0,
-    exd: error?.message || void 0,
-    dr: referrer,
-    dl: location,
-    dt: title,
-    ...getEventMeta({ type, event }),
-    ...getDeviceMeta(),
-  };
+  let payload = [
+    [param.protocolVersion, '2'],
+    [param.trackingId, trackingId],
+    [param.pageId, getHash(location)],
+    [param.language, (navigator.language || '').toLowerCase() || void 0],
+    [param.clientId, getClientId()],
+    [param.firstVisit, firstVisit],
+    [param.hitCount, '1'],
+    [param.sessionId, getSessionId()],
+    [param.sessionCount, sessionCount],
+    [param.sessionEngagement, '1'],
+    [param.sessionStart, sessionStart],
+    [param.debug, debug ? '1' : void 0],
+    [param.referrer, referrer],
+    [param.location, location],
+    [param.title, title],
+    [param.screenResolution, `${screen.width}x${screen.height}`],
+  ];
 
-  Object.keys(payload).forEach((key) => payload[key] ?? delete payload[key]);
+  payload = payload.concat(getEventMeta({ type, event }));
+
+  payload.forEach(([, value], index) => value || delete payload[index]);
 
   return new URLSearchParams(payload);
 }
