@@ -1,5 +1,6 @@
 import { Configuration, DefinePlugin } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
+import UglifyJsPlugin from 'uglifyjs-webpack-plugin';
 import * as path from 'path';
 
 /* -----------------------------------
@@ -98,6 +99,14 @@ const config = ({ mode }): Configuration[] =>
     ],
     optimization: {
       usedExports: true,
+      minimizer: [
+        new UglifyJsPlugin({
+          parallel: true,
+          uglifyOptions: {
+            mangle: true,
+          },
+        }),
+      ],
     },
     ...config,
   }));
