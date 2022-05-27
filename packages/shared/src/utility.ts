@@ -15,9 +15,11 @@ function debounce(callback: TimerHandler, frequency = 500, timer = 0) {
  * -------------------------------- */
 
 function getRandomId(length = 16) {
-  const digits = Number('1'.padEnd(length + 1, '0'));
+  length = length > 16 ? 16 : length;
 
-  return `${Math.floor(Math.random() * digits) + 1}`;
+  const digits = Number('1'.padEnd(length, '0'));
+
+  return `${Math.floor(Math.random() * digits)}`.padEnd(length, '0').substring(0, length);
 }
 
 /* -----------------------------------
@@ -34,7 +36,7 @@ function getHash(value: string, length = 16) {
     hash = hash & hash;
   }
 
-  return `${hash & 0xffff}`.padStart(length, '0');
+  return `${hash & 0xffff}`.padStart(length, '0').substring(0, length);
 }
 
 /* -----------------------------------
