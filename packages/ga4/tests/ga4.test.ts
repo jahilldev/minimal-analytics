@@ -14,7 +14,6 @@ const errorTrackingId = 'GA4: Tracking ID is missing or undefined';
 const testTitle = 'testTitle';
 const testUrl = 'https://google.com';
 const testLanguage = 'en-gb';
-const testColour = 32;
 const testWidth = 1600;
 const testHeight = 900;
 const testEvent = 'custom_event';
@@ -59,7 +58,7 @@ describe('ga4 -> track()', () => {
   });
 
   Object.defineProperty(self, 'screen', {
-    value: { width: testWidth, height: testHeight, colorDepth: testColour },
+    value: { width: testWidth, height: testHeight },
   });
 
   beforeEach(() => jest.resetAllMocks());
@@ -86,7 +85,6 @@ describe('ga4 -> track()', () => {
       'en=page_view',
       `dr=${encodeURIComponent(testUrl)}`,
       `dt=${encodeURIComponent(testTitle)}`,
-      `sd=${testColour}-bit`,
     ];
 
     track(trackingId);
