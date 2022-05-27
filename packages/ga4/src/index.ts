@@ -144,8 +144,7 @@ function getQueryParams(trackingId: string, { type, event, debug }: IProps) {
   ];
 
   payload = payload.concat(getEventMeta({ type, event }));
-
-  payload.forEach(([, value], index) => value || delete payload[index]);
+  payload = payload.filter(([, value]) => value);
 
   return new URLSearchParams(payload);
 }
