@@ -219,7 +219,7 @@ function getElementData(element: Element | any): string[][] {
     [param.targetText, textContent],
     [param.targetClass, element.className],
     [param.path, element.href],
-    [param.timeStamp, Date.now()],
+    [param.timeStamp, `${Date.now() - 5e2}`],
   ];
 
   return eventData;
