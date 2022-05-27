@@ -1,6 +1,6 @@
 {
   "name": "@minimal-analytics/heap",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "description": "A tiny (1KB GZipped) version of Heap, complete with page view and input tracking",
   "author": "James Hill <jahill@groupon.com>",
   "homepage": "https://github.com/jahilldev/minimal-analytics/tree/main/packages/heap#readme",
@@ -19,7 +19,7 @@
     "url": "https://github.com/jahilldev/minimal-analytics/issues"
   },
   "keywords": [
-    "ga4",
+    "heap",
     "minimal",
     "performance",
     "analytics",
