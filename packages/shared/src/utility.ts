@@ -5,7 +5,9 @@
  * -------------------------------- */
 
 function debounce(callback: TimerHandler, frequency = 500, timer = 0) {
-  return (...args) => (clearTimeout(timer), (timer = setTimeout(callback, frequency, ...args)));
+  return (...args) => (
+    clearTimeout(timer), (timer = setTimeout(callback, frequency, ...args))
+  );
 }
 
 /* -----------------------------------
@@ -15,9 +17,11 @@ function debounce(callback: TimerHandler, frequency = 500, timer = 0) {
  * -------------------------------- */
 
 function getRandomId(length = 16) {
+  const randomId = `${Math.floor(Math.random() * 1e16)}`;
+
   length = length > 16 ? 16 : length;
 
-  return `${Math.floor(Math.random() * 1e16)}`.substring(0, length);
+  return randomId.padStart(length, '0').substring(-1, length);
 }
 
 /* -----------------------------------
@@ -34,7 +38,9 @@ function getHash(value: string, length = 16) {
     hash = hash & hash;
   }
 
-  return `${hash & 0xffff}`.padStart(length, '0').substring(0, length);
+  hash = Math.abs(hash);
+
+  return `${hash}`.padStart(length, '0').substring(-1, length);
 }
 
 /* -----------------------------------

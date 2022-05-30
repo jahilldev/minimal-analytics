@@ -1,4 +1,9 @@
-import { getDocument, getRandomId, getClientId, getSessionId } from '@minimal-analytics/shared';
+import {
+  getDocument,
+  getRandomId,
+  getClientId,
+  getSessionId,
+} from '@minimal-analytics/shared';
 import { param } from './model';
 
 /* -----------------------------------

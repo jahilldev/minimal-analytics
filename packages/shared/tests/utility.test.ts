@@ -43,8 +43,7 @@ describe('shared -> utility', () => {
 
   describe('getHash', () => {
     it('generates a hash string from an input seed', () => {
-      const iterations = new Array(5);
-
+      const iterations = [...Array(10).keys()];
       const result = getHash(hashSeed);
 
       expect(result).not.toEqual(hashSeed);
