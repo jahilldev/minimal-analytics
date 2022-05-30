@@ -17,11 +17,11 @@ const hashSeed = `${Math.random()}`;
 describe('shared -> utility', () => {
   describe('getRandomId', () => {
     it('generates a unique ID after every call', () => {
-      const result = getRandomId();
+      const results = [...Array(10).keys()].map(() => getRandomId());
 
-      expect(result).not.toEqual(getRandomId());
-      expect(result).not.toEqual(getRandomId());
-      expect(result).not.toEqual(getRandomId());
+      results.forEach((result) => {
+        expect(result).not.toEqual(getRandomId());
+      });
     });
 
     it('generates an ID of correct length', () => {

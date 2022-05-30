@@ -17,9 +17,7 @@ function debounce(callback: TimerHandler, frequency = 500, timer = 0) {
 function getRandomId(length = 16) {
   length = length > 16 ? 16 : length;
 
-  const digits = Number('1'.padEnd(length, '0'));
-
-  return `${Math.floor(Math.random() * digits)}`.padEnd(length, '0').substring(0, length);
+  return `${Math.floor(Math.random() * 1e16)}`.substring(0, length);
 }
 
 /* -----------------------------------
