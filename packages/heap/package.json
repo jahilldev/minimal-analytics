@@ -1,6 +1,6 @@
 {
   "name": "@minimal-analytics/heap",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A tiny (1KB GZipped) version of Heap, complete with page view and input tracking",
   "author": "James Hill <jahill@groupon.com>",
   "homepage": "https://github.com/jahilldev/minimal-analytics/tree/main/packages/heap#readme",

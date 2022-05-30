@@ -4,7 +4,6 @@ import {
   getClientId,
   getSessionId,
 } from '@minimal-analytics/shared';
-import { param } from './model';
 
 /* -----------------------------------
  *
@@ -47,6 +46,45 @@ const blockedTags = ['html', 'body'];
 let eventsBound = false;
 let clickHandler = null;
 let eventCounter = 0;
+
+/* -----------------------------------
+ *
+ * Params
+ *
+ * -------------------------------- */
+
+const param = {
+  appId: 'a',
+  targetClass: 'c',
+  domain: 'd',
+  searchKeyword: 'e',
+  hash: 'g',
+  path: 'h',
+  targetId: 'i',
+  custom: 'k',
+  targetTag: 'n',
+  query: 'q',
+  referrer: 'r',
+  title: 't',
+  targetText: 'x',
+  hierachy: 'y',
+  timeStamp: 'ts',
+  version: 'tv',
+  userId: 'u',
+  sessionId: 's',
+  sentTime: 'st',
+  viewId: 'v',
+  previousPage: 'pr',
+  sessionParam: 'sp',
+  pageParam: 'pp',
+  utm: {
+    source: 'us',
+    medium: 'um',
+    term: 'ut',
+    campaign: 'ua',
+    content: 'uc',
+  },
+};
 
 /* -----------------------------------
  *
@@ -106,29 +144,6 @@ function getPageData(isEvent: boolean) {
     [param.timeStamp, `${Date.now()}`],
     ['z', '2'], // ?
   ];
-
-  /* TODO
-  - Encode list of params "pp" & "sp" (?) if event
-  - Example below:
-      sp: r (detail)
-      sp: http://localhost:8080/articles/
-      sp: ts (detail)
-      sp: 1653495134162
-      sp: d (payload)
-      sp: localhost
-      sp: h (detail)
-      sp: /articles/
-      pp: d
-      pp: localhost
-      pp: h
-      pp: /articles/managing-third-party-scripts-performance/
-      pp: t
-      pp: Managing third party scripts - James Hill
-      pp: ts
-      pp: 1653495171266
-      pp: pr
-      pp: /articles/
-  */
 
   if (isEvent) {
     payload = [].concat(
