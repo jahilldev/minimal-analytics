@@ -103,7 +103,16 @@ const config = ({ mode }): Configuration[] =>
         new TerserPlugin({
           parallel: true,
           terserOptions: {
-            mangle: true,
+            mangle: {
+              properties: {
+                reserved: [
+                  'minimalAnalytics',
+                  'trackingId',
+                  'autoTrack',
+                  'analyticsEndpoint',
+                ],
+              },
+            },
           },
         }),
       ],

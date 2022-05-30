@@ -7,6 +7,7 @@ import {
   getScrollPercentage,
   getHash,
 } from '@minimal-analytics/shared';
+import { param } from './model';
 
 /* -----------------------------------
  *
@@ -71,33 +72,6 @@ const eventKeys = {
 
 /* -----------------------------------
  *
- * Param
- *
- * -------------------------------- */
-
-const param = {
-  protocolVersion: 'v',
-  trackingId: 'tid',
-  pageId: '_p',
-  language: 'ul',
-  clientId: 'cid',
-  firstVisit: '_fv',
-  hitCount: '_s',
-  sessionId: 'sid',
-  sessionCount: 'sct',
-  sessionEngagement: 'seg',
-  sessionStart: '_ss',
-  debug: '_dbg',
-  referrer: 'dr',
-  location: 'dl',
-  title: 'dt',
-  eventName: 'en',
-  eventParam: 'ep.',
-  screenResolution: 'sr',
-};
-
-/* -----------------------------------
- *
  * Arguments
  *
  * -------------------------------- */
@@ -106,6 +80,8 @@ function getArguments(args: any[]): [string, IProps] {
   const globalId = window.minimalAnalytics?.trackingId;
   const trackingId = typeof args[0] === 'string' ? args[0] : globalId;
   const props = typeof args[0] === 'object' ? args[0] : args[1] || {};
+
+  console.log('getArguments', { globalId, trackingId, props });
 
   return [trackingId, { type: eventKeys.pageView, ...props }];
 }
