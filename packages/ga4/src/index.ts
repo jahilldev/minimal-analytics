@@ -81,8 +81,6 @@ function getArguments(args: any[]): [string, IProps] {
   const trackingId = typeof args[0] === 'string' ? args[0] : globalId;
   const props = typeof args[0] === 'object' ? args[0] : args[1] || {};
 
-  console.log('getArguments', { globalId, trackingId, props });
-
   return [trackingId, { type: eventKeys.pageView, ...props }];
 }
 
