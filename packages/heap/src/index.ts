@@ -4,6 +4,7 @@ import {
   getClientId,
   getSessionId,
 } from '@minimal-analytics/shared';
+import { param } from './model';
 
 /* -----------------------------------
  *
@@ -46,45 +47,6 @@ const blockedTags = ['html', 'body'];
 let eventsBound = false;
 let clickHandler = null;
 let eventCounter = 0;
-
-/* -----------------------------------
- *
- * Params
- *
- * -------------------------------- */
-
-const param = {
-  appId: 'a',
-  targetClass: 'c',
-  domain: 'd',
-  searchKeyword: 'e',
-  hash: 'g',
-  path: 'h',
-  targetId: 'i',
-  custom: 'k',
-  targetTag: 'n',
-  query: 'q',
-  referrer: 'r',
-  title: 't',
-  targetText: 'x',
-  hierachy: 'y',
-  timeStamp: 'ts',
-  version: 'tv',
-  userId: 'u',
-  sessionId: 's',
-  sentTime: 'st',
-  viewId: 'v',
-  previousPage: 'pr',
-  sessionParam: 'sp',
-  pageParam: 'pp',
-  utm: {
-    source: 'us',
-    medium: 'um',
-    term: 'ut',
-    campaign: 'ua',
-    content: 'uc',
-  },
-};
 
 /* -----------------------------------
  *
