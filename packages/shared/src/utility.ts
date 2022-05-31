@@ -26,11 +26,11 @@ function getRandomId(length = 16) {
 
 /* -----------------------------------
  *
- * Hash
+ * HashId
  *
  * -------------------------------- */
 
-function getHash(value: string, length = 16) {
+function getHashId(value: string, length = 16) {
   let hash = 0;
 
   for (let index = 0; index < value.length; index++) {
@@ -74,4 +74,4 @@ function getScrollPercentage() {
  *
  * -------------------------------- */
 
-export { debounce, getRandomId, getHash, getScrollPercentage };
+export { debounce, getRandomId, getHashId, getScrollPercentage };

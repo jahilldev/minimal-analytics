@@ -1,4 +1,4 @@
-import { getRandomId, getHash } from '../src/utility';
+import { getRandomId, getHashId } from '../src/utility';
 
 /* -----------------------------------
  *
@@ -44,12 +44,12 @@ describe('shared -> utility', () => {
   describe('getHash', () => {
     it('generates a hash string from an input seed', () => {
       const iterations = [...Array(10).keys()];
-      const result = getHash(hashSeed);
+      const result = getHashId(hashSeed);
 
       expect(result).not.toEqual(hashSeed);
 
       iterations.forEach(() => {
-        expect(result).toEqual(getHash(hashSeed));
+        expect(result).toEqual(getHashId(hashSeed));
       });
     });
 
@@ -57,7 +57,7 @@ describe('shared -> utility', () => {
       const lengths = [8, 16, 32, 64];
 
       lengths.forEach((length) => {
-        expect(getHash(hashSeed, length).length).toEqual(length);
+        expect(getHashId(hashSeed, length).length).toEqual(length);
       });
     });
   });

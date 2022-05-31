@@ -5,7 +5,7 @@ import {
   getSessionId,
   getSessionState,
   getScrollPercentage,
-  getHash,
+  getHashId,
 } from '@minimal-analytics/shared';
 import { param } from './model';
 
@@ -103,7 +103,7 @@ function getEventMeta({ type, event }: Pick<IProps, 'type' | 'event'>) {
 
   let payload = [
     [param.eventName, eventName],
-    [`${param.eventParam}search_term`, searchTerm],
+    [`${param.eventParam}.search_term`, searchTerm],
   ];
 
   if (event) {
@@ -127,7 +127,7 @@ function getQueryParams(trackingId: string, { type, event, debug }: IProps) {
   let payload = [
     [param.protocolVersion, '2'],
     [param.trackingId, trackingId],
-    [param.pageId, getHash(location)],
+    [param.pageId, getHashId(location)],
     [param.language, (navigator.language || '').toLowerCase() || void 0],
     [param.clientId, getClientId()],
     [param.firstVisit, firstVisit],
@@ -181,7 +181,10 @@ const onScrollEvent = debounce((trackingId: string) => {
     return;
   }
 
-  track(trackingId, { type: eventKeys.scroll, event: { 'epn.percent_scrolled': 90 } });
+  track(trackingId, {
+    type: eventKeys.scroll,
+    event: { [`${param.eventParamNumber}.percent_scrolled`]: 90 },
+  });
 
   document.removeEventListener('scroll', scrollHandler);
 });
@@ -198,7 +201,10 @@ function onUnloadEvent(trackingId: string) {
     0
   );
 
-  track(trackingId, { type: eventKeys.userEngagement, event: { _et: timeActive } });
+  track(trackingId, {
+    type: eventKeys.userEngagement,
+    event: { [param.enagementTime]: timeActive },
+  });
 }
 
 /* -----------------------------------

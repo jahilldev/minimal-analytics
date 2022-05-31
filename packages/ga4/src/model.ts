@@ -21,8 +21,10 @@ const param = {
   location: 'dl',
   title: 'dt',
   eventName: 'en',
-  eventParam: 'ep.',
+  eventParam: 'ep',
+  eventParamNumber: 'epn',
   screenResolution: 'sr',
+  enagementTime: '_et',
 };
 
 /* -----------------------------------
