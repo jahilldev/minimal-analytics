@@ -37,10 +37,6 @@ interface IProps {
   type?: string;
   event?: EventParams;
   debug?: boolean;
-  error?: {
-    message: string;
-    fatal: boolean;
-  };
 }
 
 /* -----------------------------------
@@ -55,6 +51,7 @@ const analyticsEndpoint = 'https://www.google-analytics.com/g/collect';
 const searchTerms = ['q', 's', 'search', 'query', 'keyword'];
 let trackCalled = false;
 let eventsBound = false;
+let clickHandler = null;
 let scrollHandler = null;
 let unloadHandler = null;
 let engagementTimes = [[Date.now()]];
@@ -153,6 +150,19 @@ function getQueryParams(trackingId: string, { type, event, debug }: IProps) {
 
 /* -----------------------------------
  *
+ * ClickEvent
+ *
+ * -------------------------------- */
+
+function onClickEvent(trackingId: string, event: Event) {
+  const target = event.target as HTMLElement;
+  const isValidTarget = target.matches('a, button');
+
+  console.log('onClickEvent', { trackingId, isValidTarget });
+}
+
+/* -----------------------------------
+ *
  * VisibilityEvent
  *
  * -------------------------------- */
@@ -220,11 +230,13 @@ function bindEvents(trackingId: string) {
   }
 
   eventsBound = true;
+  clickHandler = onClickEvent.bind(null, trackingId);
   scrollHandler = onScrollEvent.bind(null, trackingId);
   unloadHandler = onUnloadEvent.bind(null, trackingId);
 
   document.addEventListener('visibilitychange', onVisibilityChange);
   document.addEventListener('scroll', scrollHandler);
+  document.addEventListener('click', clickHandler);
   window.addEventListener('beforeunload', unloadHandler);
 }
 
@@ -237,7 +249,7 @@ function bindEvents(trackingId: string) {
 function track(trackingId: string, props?: IProps);
 function track(props?: IProps);
 function track(...args: any[]) {
-  const [trackingId, { type, event, debug, error }] = getArguments(args);
+  const [trackingId, { type, event, debug }] = getArguments(args);
 
   if (!trackingId) {
     console.error('GA4: Tracking ID is missing or undefined');
@@ -245,7 +257,7 @@ function track(...args: any[]) {
     return;
   }
 
-  const queryParams = getQueryParams(trackingId, { type, event, debug, error });
+  const queryParams = getQueryParams(trackingId, { type, event, debug });
   const endpoint = window.minimalAnalytics?.analyticsEndpoint || analyticsEndpoint;
 
   navigator.sendBeacon(`${endpoint}?${queryParams}`);
