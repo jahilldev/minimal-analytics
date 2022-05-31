@@ -70,8 +70,28 @@ function getScrollPercentage() {
 
 /* -----------------------------------
  *
+ * TargetElement
+ *
+ * -------------------------------- */
+
+function isTargetElement(element: Element, selector: string) {
+  let target = element;
+
+  while (test && target !== element) {
+    target = target.parentNode as Element;
+
+    if (target.matches(selector)) {
+      break;
+    }
+  }
+
+  return target;
+}
+
+/* -----------------------------------
+ *
  * Export
  *
  * -------------------------------- */
 
-export { debounce, getRandomId, getHashId, getScrollPercentage };
+export { debounce, getRandomId, getHashId, getScrollPercentage, isTargetElement };

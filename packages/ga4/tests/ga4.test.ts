@@ -18,6 +18,12 @@ const testWidth = 1600;
 const testHeight = 900;
 const testEvent = 'custom_event';
 const testData = Math.random();
+const testLink = 'https://google.com';
+const testAnchor = `
+  <main>
+    <a href="${testLink}">${testTitle}</a>
+  </main>
+`;
 
 /* -----------------------------------
  *
@@ -61,7 +67,17 @@ describe('ga4 -> track()', () => {
     value: { width: testWidth, height: testHeight },
   });
 
-  beforeEach(() => jest.resetAllMocks());
+  let root;
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+    root = document.createElement('div');
+    document.body.appendChild(root);
+  });
+
+  afterEach(() => {
+    document.body.removeChild(root);
+  });
 
   it('logs an error message if no tracking ID is provided', () => {
     track();
@@ -143,6 +159,23 @@ describe('ga4 -> track()', () => {
     expect(navigator.sendBeacon).toBeCalledWith(expect.stringContaining(testEndpoint));
   });
 
+  it('triggers a tracking event when a target element is clicked', async () => {
+    root.innerHTML = testAnchor;
+
+    track(trackingId);
+
+    expect(navigator.sendBeacon).toBeCalledTimes(1);
+
+    const link = root.querySelector('a');
+    const event = new CustomEvent('click');
+
+    Object.defineProperty(event, 'target', { value: link });
+
+    document.dispatchEvent(event);
+
+    expect(navigator.sendBeacon).toBeCalledTimes(2);
+  });
+
   it('triggers a tracking event once when scroll is 90% of window', async () => {
     track(trackingId);
 
@@ -188,6 +221,8 @@ describe('ga4 -> track()', () => {
     window.dispatchEvent(new Event('beforeunload'));
 
     expect(navigator.sendBeacon).toBeCalledTimes(2);
-    expect(navigator.sendBeacon).toBeCalledWith(expect.stringContaining('en=user_engagement'));
+    expect(navigator.sendBeacon).toBeCalledWith(
+      expect.stringContaining('en=user_engagement')
+    );
   });
 });
