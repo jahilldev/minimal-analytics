@@ -74,15 +74,15 @@ function getScrollPercentage() {
  *
  * -------------------------------- */
 
-function isTargetElement(element: Element, selector: string): Element | undefined {
+function isTargetElement(element: Element, selector: string): Element | null {
   let target = element;
 
   while (target) {
-    target = target.parentNode as Element;
-
-    if (!target || target.matches(selector)) {
+    if (target?.matches(selector)) {
       break;
     }
+
+    target = target?.parentNode as Element;
   }
 
   return target;
