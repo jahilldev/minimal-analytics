@@ -1,4 +1,4 @@
-import { getRandomId, getHashId } from '../src/utility';
+import { getRandomId, getHashId, isTargetElement } from '../src/utility';
 
 /* -----------------------------------
  *
@@ -59,6 +59,22 @@ describe('shared -> utility', () => {
       lengths.forEach((length) => {
         expect(getHashId(hashSeed, length).length).toEqual(length);
       });
+    });
+  });
+
+  describe('isTargetElement', () => {
+    it('returns true if element matches selector', () => {
+      const wrapper = document.createElement('section');
+      const html = `<a href="#"><div><span>Link</span></div></a>`;
+      const selector = 'a';
+
+      wrapper.innerHTML = html;
+
+      const target = wrapper.querySelector('span');
+      const result = isTargetElement(target, selector);
+
+      expect(result).not.toBe(void 0);
+      expect(result?.tagName.toLowerCase()).toBe(selector);
     });
   });
 });
