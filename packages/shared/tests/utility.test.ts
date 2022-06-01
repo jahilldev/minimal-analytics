@@ -63,7 +63,17 @@ describe('shared -> utility', () => {
   });
 
   describe('isTargetElement', () => {
-    it('returns true if element matches selector', () => {
+    it('returns element if matched by provided selector', () => {
+      const target = document.createElement('a');
+      const selector = 'a';
+
+      const result = isTargetElement(target, selector);
+
+      expect(result).not.toBe(null);
+      expect(result?.tagName.toLowerCase()).toBe(selector);
+    });
+
+    it('returns element if matched in parent tree by selector', () => {
       const wrapper = document.createElement('section');
       const html = `<a href="#"><div><span>Link</span></div></a>`;
       const selector = 'a';
@@ -73,8 +83,22 @@ describe('shared -> utility', () => {
       const target = wrapper.querySelector('span');
       const result = isTargetElement(target, selector);
 
-      expect(result).not.toBe(void 0);
+      expect(result).not.toBe(null);
       expect(result?.tagName.toLowerCase()).toBe(selector);
+    });
+
+    it('returns null if element does not match selector', () => {
+      const wrapper = document.createElement('section');
+      const html = `<a href="#"><div><span>Link</span></div></a>`;
+      const selector = 'button';
+
+      wrapper.innerHTML = html;
+
+      const target = wrapper.querySelector('span');
+      const result = isTargetElement(target, selector);
+
+      expect(result).toBe(null);
+      expect(result?.tagName.toLowerCase()).not.toBe(selector);
     });
   });
 });

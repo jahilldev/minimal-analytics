@@ -7,6 +7,7 @@ import {
   getSessionState,
   getScrollPercentage,
   getRandomId,
+  isTargetElement,
   getEventParams,
 } from '@minimal-analytics/shared';
 import { param } from './model';
@@ -65,6 +66,7 @@ let engagementTimes = [[Date.now()]];
 const eventKeys = {
   pageView: 'page_view',
   scroll: 'scroll',
+  click: 'click',
   viewSearchResults: 'view_search_results',
   userEngagement: 'user_engagement',
 };
@@ -156,9 +158,15 @@ function getQueryParams(trackingId: string, { type, event, debug }: IProps) {
 
 function onClickEvent(trackingId: string, event: Event) {
   const target = event.target as HTMLElement;
-  const isValidTarget = target.matches('a, button');
+  const isValidTarget = isTargetElement(target, 'a, button');
 
-  console.log('onClickEvent', { trackingId, isValidTarget });
+  if (!isValidTarget) {
+    return;
+  }
+
+  // TODO
+  // - Send "click" event with relevant params
+  // track(trackingId, { type: eventKeys.click, event: { ... } });
 }
 
 /* -----------------------------------
