@@ -6,7 +6,7 @@ import {
   getSessionId,
   getSessionState,
   getScrollPercentage,
-  getHashId,
+  getRandomId,
   getEventParams,
 } from '@minimal-analytics/shared';
 import { param } from './model';
@@ -129,7 +129,7 @@ function getQueryParams(trackingId: string, { type, event, debug }: IProps) {
   let payload = [
     [param.protocolVersion, '2'],
     [param.trackingId, trackingId],
-    [param.pageId, getHashId(location)],
+    [param.pageId, getRandomId()],
     [param.language, (navigator.language || '').toLowerCase() || void 0],
     [param.clientId, getClientId()],
     [param.firstVisit, firstVisit],
