@@ -2,6 +2,14 @@ import { getRandomId } from './utility';
 
 /* -----------------------------------
  *
+ * Types
+ *
+ * -------------------------------- */
+
+type EventParams = Record<string, string | number> | (string | number)[][];
+
+/* -----------------------------------
+ *
  * Variables
  *
  * -------------------------------- */
@@ -101,11 +109,26 @@ function getSessionState(firstEvent: boolean) {
 
 /* -----------------------------------
  *
+ * EventPrams
+ *
+ * -------------------------------- */
+
+function getEventParams(event: EventParams) {
+  if (Array.isArray(event)) {
+    return event.map((items) => items.map((item) => item.toString()));
+  }
+
+  return Object.keys(event).map((key) => [key, `${event[key]}`]);
+}
+
+/* -----------------------------------
+ *
  * Export
  *
  * -------------------------------- */
 
 export {
+  EventParams,
   clientKey,
   sessionKey,
   counterKey,
@@ -113,4 +136,5 @@ export {
   getClientId,
   getSessionId,
   getSessionState,
+  getEventParams,
 };

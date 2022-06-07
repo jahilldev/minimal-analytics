@@ -1,4 +1,5 @@
 import {
+  EventParams,
   debounce,
   getDocument,
   getClientId,
@@ -6,6 +7,7 @@ import {
   getSessionState,
   getScrollPercentage,
   getHashId,
+  getEventParams,
 } from '@minimal-analytics/shared';
 import { param } from './model';
 
@@ -33,7 +35,7 @@ declare global {
 
 interface IProps {
   type?: string;
-  event?: Record<string, number>;
+  event?: EventParams;
   debug?: boolean;
   error?: {
     message: string;
@@ -107,7 +109,7 @@ function getEventMeta({ type, event }: Pick<IProps, 'type' | 'event'>) {
   ];
 
   if (event) {
-    payload = payload.concat(Object.keys(event).map((key) => [key, `${event[key]}`]));
+    payload = payload.concat(getEventParams(event));
   }
 
   return payload;
@@ -183,7 +185,7 @@ const onScrollEvent = debounce((trackingId: string) => {
 
   track(trackingId, {
     type: eventKeys.scroll,
-    event: { [`${param.eventParamNumber}.percent_scrolled`]: 90 },
+    event: [[`${param.eventParamNumber}.percent_scrolled`, 90]],
   });
 
   document.removeEventListener('scroll', scrollHandler);
@@ -196,14 +198,13 @@ const onScrollEvent = debounce((trackingId: string) => {
  * -------------------------------- */
 
 function onUnloadEvent(trackingId: string) {
-  const timeActive = engagementTimes.reduce(
-    (result, [visible, hidden = Date.now()]) => (result += hidden - visible),
-    0
-  );
+  const timeActive = engagementTimes
+    .reduce((result, [visible, hidden = Date.now()]) => (result += hidden - visible), 0)
+    .toString();
 
   track(trackingId, {
     type: eventKeys.userEngagement,
-    event: { [param.enagementTime]: timeActive },
+    event: [[param.enagementTime, timeActive]],
   });
 }
 
