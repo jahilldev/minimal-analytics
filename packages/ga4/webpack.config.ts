@@ -2,6 +2,7 @@ import { Configuration, DefinePlugin } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
 import TerserPlugin from 'terser-webpack-plugin';
 import * as path from 'path';
+import { param } from './src/model';
 
 /* -----------------------------------
  *
@@ -110,6 +111,8 @@ const config = ({ mode }): Configuration[] =>
                   'trackingId',
                   'autoTrack',
                   'analyticsEndpoint',
+                  // prevent params being mangled
+                  ...Object.keys(param),
                 ],
               },
             },
