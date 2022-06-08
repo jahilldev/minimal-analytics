@@ -33,7 +33,7 @@ import { track } from '@minimal-analytics/ga4';
 
 /*[...]*/
 
-track('GX-XXXXX');
+track('G-XXXXXXXXXX');
 ```
 
 ## Arguments
@@ -50,7 +50,7 @@ To call `track` without a tracking ID, it must be defined on the window via `tra
 ```html
 <script>
   window.minimalAnalytics = {
-    trackingId: 'GX-XXXXX',
+    trackingId: 'G-XXXXXXXXXX',
   };
 </script>
 ```
