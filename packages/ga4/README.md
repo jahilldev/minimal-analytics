@@ -70,7 +70,7 @@ If you'd prefer to let the `ga4` script initialise tracking itself when loaded, 
 
 ```js
 window.minimalAnalytics = {
-  trackingId: 'GX-XXXXX',
+  trackingId: 'G-XXXXXXXXXX',
   autoTrack: true, // <-- init tracking
 };
 ```
