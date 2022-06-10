@@ -1,4 +1,4 @@
-import { EventParams, getEventParams } from '../src/payload';
+import { getEventParams } from '../src/payload';
 
 /* -----------------------------------
  *
@@ -10,6 +10,8 @@ const testQuery1 = 'testQuery1';
 const testQuery2 = 'testQuery2';
 const testStringValue = `testValue-${Math.random()}`;
 const testNumberValue = Math.random();
+const localUrl = 'http://localhost/test';
+const remoteUrl = 'https://www.google.com/test';
 
 /* -----------------------------------
  *
