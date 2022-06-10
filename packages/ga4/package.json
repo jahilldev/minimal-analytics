@@ -1,7 +1,7 @@
 {
   "name": "@minimal-analytics/ga4",
-  "version": "1.5.2",
-  "description": "A tiny (2KB GZipped) version of GA4, complete with page view, engagement and scroll tracking",
+  "version": "1.6.0",
+  "description": "A tiny (2KB GZipped) version of GA4, complete with page view, engagement, scroll and click tracking",
   "author": "James Hill <jahill@groupon.com>",
   "homepage": "https://github.com/jahilldev/minimal-analytics/tree/main/packages/ga4#readme",
   "license": "MIT",
