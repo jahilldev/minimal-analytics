@@ -152,21 +152,49 @@ function getQueryParams(trackingId: string, { type, event, debug }: IProps) {
 
 /* -----------------------------------
  *
+ * ActiveTime
+ *
+ * -------------------------------- */
+
+function getActiveTime() {
+  const timeActive = engagementTimes
+    .reduce((result, [visible, hidden = Date.now()]) => (result += hidden - visible), 0)
+    .toString();
+
+  return timeActive;
+}
+
+/* -----------------------------------
+ *
  * ClickEvent
  *
  * -------------------------------- */
 
 function onClickEvent(trackingId: string, event: Event) {
-  const target = event.target as HTMLElement;
-  const isValidTarget = isTargetElement(target, 'a, button');
+  const targetElement = isTargetElement(event.target as Element, 'a, button');
+  const tagName = targetElement.tagName?.toLowerCase();
+  const elementType = tagName === 'a' ? 'link' : tagName;
+  const elementParam = `${param.eventParam}.${elementType}`;
 
-  if (!isValidTarget) {
+  const hrefAttr = targetElement.getAttribute('href');
+  const urlData = hrefAttr && new URL(hrefAttr);
+  const isOutboundLink = urlData?.hostname !== window.location.host;
+
+  if (!targetElement) {
     return;
   }
 
-  // TODO
-  // - Send "click" event with relevant params
-  // track(trackingId, { type: eventKeys.click, event: { ... } });
+  track(trackingId, {
+    type: eventKeys.click,
+    event: [
+      [`${elementParam}_id`, targetElement.id],
+      [`${elementParam}_classes`, targetElement.className],
+      [`${elementParam}_text`, targetElement.textContent],
+      [`${elementParam}_domain`, urlData?.hostname],
+      [`${param.eventParam}.outbound`, `${isOutboundLink}`],
+      [param.enagementTime, getActiveTime()],
+    ],
+  });
 }
 
 /* -----------------------------------
@@ -216,13 +244,9 @@ const onScrollEvent = debounce((trackingId: string) => {
  * -------------------------------- */
 
 function onUnloadEvent(trackingId: string) {
-  const timeActive = engagementTimes
-    .reduce((result, [visible, hidden = Date.now()]) => (result += hidden - visible), 0)
-    .toString();
-
   track(trackingId, {
     type: eventKeys.userEngagement,
-    event: [[param.enagementTime, timeActive]],
+    event: [[param.enagementTime, getActiveTime()]],
   });
 }
 
