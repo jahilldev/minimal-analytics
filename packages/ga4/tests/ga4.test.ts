@@ -250,7 +250,7 @@ describe('ga4 -> track()', () => {
 
     expect(navigator.sendBeacon).toBeCalledTimes(2);
     expect(navigator.sendBeacon).toBeCalledWith(
-      expect.stringContaining('en=user_engagement')
+      expect.stringContaining(`${param.eventName}=user_engagement`)
     );
   });
 });
