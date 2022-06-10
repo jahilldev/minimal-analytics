@@ -8,6 +8,7 @@ import {
   getScrollPercentage,
   getRandomId,
   isTargetElement,
+  getUrlData,
   getEventParams,
 } from '@minimal-analytics/shared';
 import { param } from './model';
@@ -181,8 +182,7 @@ function onClickEvent(trackingId: string, event: Event) {
   }
 
   const hrefAttr = targetElement.getAttribute('href');
-  const urlData = hrefAttr && new URL(hrefAttr);
-  const isOutboundLink = urlData?.hostname !== window.location.host;
+  const { isExternal, hostname, pathname } = getUrlData(hrefAttr);
 
   track(trackingId, {
     type: eventKeys.click,
@@ -190,8 +190,9 @@ function onClickEvent(trackingId: string, event: Event) {
       [`${elementParam}_id`, targetElement.id],
       [`${elementParam}_classes`, targetElement.className],
       [`${elementParam}_text`, targetElement.textContent.trim()],
-      [`${elementParam}_domain`, urlData?.hostname],
-      [`${param.eventParam}.outbound`, `${isOutboundLink}`],
+      [`${elementParam}_domain`, hostname],
+      [`${elementParam}_path`, pathname],
+      [`${param.eventParam}.outbound`, `${isExternal}`],
       [param.enagementTime, getActiveTime()],
     ],
   });

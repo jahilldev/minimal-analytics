@@ -115,7 +115,7 @@ function getSessionState(firstEvent: boolean) {
 
 function getEventParams(event: EventParams) {
   if (Array.isArray(event)) {
-    return event.map((items) => items.map((item) => item.toString()));
+    return event.map((items) => items.map((item) => item?.toString()));
   }
 
   return Object.keys(event).map((key) => [key, `${event[key]}`]);
