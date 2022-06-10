@@ -90,8 +90,33 @@ function isTargetElement(element: Element, selector: string): Element | null {
 
 /* -----------------------------------
  *
+ * UrlData
+ *
+ * -------------------------------- */
+
+function getUrlData(urlValue?: string) {
+  const { hostname, pathname } = (urlValue && new URL(urlValue)) || {};
+
+  let isExternal = false;
+
+  if (hostname) {
+    isExternal = hostname !== window.location.host;
+  }
+
+  return { isExternal, hostname, pathname };
+}
+
+/* -----------------------------------
+ *
  * Export
  *
  * -------------------------------- */
 
-export { debounce, getRandomId, getHashId, getScrollPercentage, isTargetElement };
+export {
+  debounce,
+  getRandomId,
+  getHashId,
+  getScrollPercentage,
+  isTargetElement,
+  getUrlData,
+};
