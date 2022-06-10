@@ -189,7 +189,7 @@ function onClickEvent(trackingId: string, event: Event) {
     event: [
       [`${elementParam}_id`, targetElement.id],
       [`${elementParam}_classes`, targetElement.className],
-      [`${elementParam}_text`, targetElement.textContent],
+      [`${elementParam}_text`, targetElement.textContent.trim()],
       [`${elementParam}_domain`, urlData?.hostname],
       [`${param.eventParam}.outbound`, `${isOutboundLink}`],
       [param.enagementTime, getActiveTime()],

@@ -19,10 +19,15 @@ const testWidth = 1600;
 const testHeight = 900;
 const testEvent = 'custom_event';
 const testData = Math.random();
-const testLink = 'https://google.com';
+const testDomain = 'google.com';
+const testLink = `https://${testDomain}/hello`;
+const testId = 'testId';
+const testClass = 'testClass';
 const testAnchor = `
   <main>
-    <a href="${testLink}">${testTitle}</a>
+    <a href="${testLink}" id="${testId}" class="${testClass}">
+      <span>${testTitle}</span>
+    </a>
   </main>
 `;
 
@@ -167,6 +172,15 @@ describe('ga4 -> track()', () => {
   });
 
   it('triggers a tracking event when a target element is clicked', async () => {
+    const params = [
+      `${param.eventName}=click`,
+      `${param.eventParam}.link_id=${testId}`,
+      `${param.eventParam}.link_classes=${testClass}`,
+      `${param.eventParam}.link_text=${testTitle}`,
+      `${param.eventParam}.link_domain=${testDomain}`,
+      `${param.eventParam}.outbound=true`,
+    ];
+
     root.innerHTML = testAnchor;
 
     track(trackingId);
@@ -180,8 +194,14 @@ describe('ga4 -> track()', () => {
 
     document.dispatchEvent(event);
 
-    // TODO
-    // expect(navigator.sendBeacon).toBeCalledTimes(2);
+    expect(navigator.sendBeacon).toBeCalledTimes(2);
+
+    params.forEach((param) =>
+      expect(navigator.sendBeacon).toHaveBeenNthCalledWith(
+        2,
+        expect.stringContaining(param)
+      )
+    );
   });
 
   it('triggers a tracking event once when scroll is 90% of window', async () => {
