@@ -176,20 +176,20 @@ function onClickEvent(trackingId: string, event: Event) {
   const tagName = targetElement.tagName?.toLowerCase();
   const elementType = tagName === 'a' ? 'link' : tagName;
   const elementParam = `${param.eventParam}.${elementType}`;
+  const hrefAttr = targetElement?.getAttribute('href');
+  const { isExternal, hostname, pathname } = getUrlData(hrefAttr);
+  const isInternalLink = elementType === 'link' && hostname && !isExternal;
 
-  if (!targetElement) {
+  if (!targetElement || isInternalLink) {
     return;
   }
-
-  const hrefAttr = targetElement.getAttribute('href');
-  const { isExternal, hostname, pathname } = getUrlData(hrefAttr);
 
   track(trackingId, {
     type: eventKeys.click,
     event: [
       [`${elementParam}_id`, targetElement.id],
       [`${elementParam}_classes`, targetElement.className],
-      [`${elementParam}_text`, targetElement.textContent.trim()],
+      [`${elementParam}_text`, targetElement.textContent?.trim()],
       [`${elementParam}_domain`, hostname],
       [`${elementParam}_path`, pathname],
       [`${param.eventParam}.outbound`, `${isExternal}`],
