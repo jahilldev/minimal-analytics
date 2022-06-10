@@ -177,6 +177,7 @@ describe('ga4 -> track()', () => {
       `${param.eventParam}.link_id=${testId}`,
       `${param.eventParam}.link_classes=${testClass}`,
       `${param.eventParam}.link_text=${testTitle}`,
+      `${param.eventParam}.link_url=${encodeURIComponent(testLink)}`,
       `${param.eventParam}.link_domain=${testDomain}`,
       `${param.eventParam}.outbound=true`,
     ];
