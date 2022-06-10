@@ -176,13 +176,13 @@ function onClickEvent(trackingId: string, event: Event) {
   const elementType = tagName === 'a' ? 'link' : tagName;
   const elementParam = `${param.eventParam}.${elementType}`;
 
-  const hrefAttr = targetElement.getAttribute('href');
-  const urlData = hrefAttr && new URL(hrefAttr);
-  const isOutboundLink = urlData?.hostname !== window.location.host;
-
   if (!targetElement) {
     return;
   }
+
+  const hrefAttr = targetElement.getAttribute('href');
+  const urlData = hrefAttr && new URL(hrefAttr);
+  const isOutboundLink = urlData?.hostname !== window.location.host;
 
   track(trackingId, {
     type: eventKeys.click,
