@@ -1,4 +1,4 @@
-import { getRandomId, getHashId, isTargetElement } from '../src/utility';
+import { getRandomId, getHashId, isTargetElement, getUrlData } from '../src/utility';
 
 /* -----------------------------------
  *
@@ -7,6 +7,11 @@ import { getRandomId, getHashId, isTargetElement } from '../src/utility';
  * -------------------------------- */
 
 const hashSeed = `${Math.random()}`;
+const testPath = '/test/path';
+const testExternalHost = 'www.google.com';
+const testLocalHost = 'localhost';
+const testExternalUrl = `https://${testExternalHost + testPath}`;
+const testLocalUrl = `http://${testLocalHost}:3000${testPath}`;
 
 /* -----------------------------------
  *
@@ -99,6 +104,28 @@ describe('shared -> utility', () => {
 
       expect(result).toBe(null);
       expect(result?.tagName.toLowerCase()).not.toBe(selector);
+    });
+  });
+
+  describe('getUrlData', () => {
+    it('returns correct data from an external URL', () => {
+      const result = getUrlData(testExternalUrl);
+
+      expect(result).toEqual({
+        isExternal: true,
+        hostname: testExternalHost,
+        pathname: testPath,
+      });
+    });
+
+    it('returns correct data from a local URL', () => {
+      const result = getUrlData(testLocalUrl);
+
+      expect(result).toEqual({
+        isExternal: false,
+        hostname: testLocalHost,
+        pathname: testPath,
+      });
     });
   });
 });
