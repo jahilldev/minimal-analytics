@@ -127,5 +127,11 @@ describe('shared -> utility', () => {
         pathname: testPath,
       });
     });
+
+    it('handles an invalid URL being passed', () => {
+      const result = getUrlData(hashSeed);
+
+      expect(result).toEqual({ isExternal: false });
+    });
   });
 });
