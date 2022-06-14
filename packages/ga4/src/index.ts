@@ -1,5 +1,4 @@
 import {
-  EventParams,
   debounce,
   getDocument,
   getClientId,
@@ -11,6 +10,7 @@ import {
   getUrlData,
   getEventParams,
 } from '@minimal-analytics/shared';
+import type { EventParams } from '@minimal-analytics/shared';
 import { param } from './model';
 
 /* -----------------------------------
