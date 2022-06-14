@@ -95,7 +95,13 @@ function isTargetElement(element: Element, selector: string): Element | null {
  * -------------------------------- */
 
 function getUrlData(urlValue?: string) {
-  const { hostname, pathname } = (urlValue && new URL(urlValue)) || {};
+  let hostname, pathname;
+
+  try {
+    ({ hostname, pathname } = (urlValue && new URL(urlValue)) || {});
+  } catch {
+    // no-op
+  }
 
   let isExternal = false;
 
