@@ -96,14 +96,13 @@ function isTargetElement(element: Element, selector: string): Element | null {
 
 function getUrlData(urlValue?: string) {
   let hostname, pathname;
+  let isExternal = false;
 
   try {
     ({ hostname, pathname } = (urlValue && new URL(urlValue)) || {});
   } catch {
     // no-op
   }
-
-  let isExternal = false;
 
   if (hostname) {
     isExternal = hostname !== window.location.host;
