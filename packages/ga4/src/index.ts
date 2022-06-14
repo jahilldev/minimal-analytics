@@ -297,7 +297,7 @@ function bindEvents(trackingId: string) {
   unloadHandler = onUnloadEvent.bind(null, trackingId);
 
   document.addEventListener('visibilitychange', onVisibilityChange);
-  document.addEventListener('mouseover', onFocusEvent);
+  document.addEventListener('mouseenter', onFocusEvent);
   document.addEventListener('scroll', scrollHandler);
   document.addEventListener('click', clickHandler);
 
