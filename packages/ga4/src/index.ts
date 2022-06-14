@@ -172,7 +172,7 @@ function getActiveTime() {
 
 function onClickEvent(trackingId: string, event: Event) {
   const targetElement = isTargetElement(event.target as Element, 'a, button');
-  const tagName = targetElement.tagName?.toLowerCase();
+  const tagName = targetElement?.tagName?.toLowerCase();
   const elementType = tagName === 'a' ? 'link' : tagName;
   const elementParam = `${param.eventParam}.${elementType}`;
   const hrefAttr = targetElement?.getAttribute('href');
@@ -199,16 +199,47 @@ function onClickEvent(trackingId: string, event: Event) {
 
 /* -----------------------------------
  *
+ * BlurEvent
+ *
+ * -------------------------------- */
+
+function onBlurEvent() {
+  const timeIndex = engagementTimes.length - 1;
+  const [, isHidden] = engagementTimes[timeIndex];
+
+  if (!isHidden) {
+    engagementTimes[timeIndex].push(Date.now());
+  }
+}
+
+/* -----------------------------------
+ *
+ * FocusEvent
+ *
+ * -------------------------------- */
+
+function onFocusEvent() {
+  const timeIndex = engagementTimes.length - 1;
+  const [, isHidden] = engagementTimes[timeIndex];
+
+  if (isHidden) {
+    engagementTimes.push([Date.now()]);
+  }
+}
+
+/* -----------------------------------
+ *
  * VisibilityEvent
  *
  * -------------------------------- */
 
 function onVisibilityChange() {
   const timeIndex = engagementTimes.length - 1;
+  const [, isHidden] = engagementTimes[timeIndex];
   const isVisible = document.visibilityState === 'visible';
 
   if (!isVisible) {
-    engagementTimes[timeIndex].push(Date.now());
+    !isHidden && engagementTimes[timeIndex].push(Date.now());
 
     return;
   }
@@ -268,6 +299,9 @@ function bindEvents(trackingId: string) {
   document.addEventListener('visibilitychange', onVisibilityChange);
   document.addEventListener('scroll', scrollHandler);
   document.addEventListener('click', clickHandler);
+
+  window.addEventListener('blur', onBlurEvent);
+  window.addEventListener('focus', onFocusEvent);
   window.addEventListener('beforeunload', unloadHandler);
 }
 

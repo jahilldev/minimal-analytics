@@ -54,6 +54,8 @@ Object.defineProperty(navigator, 'sendBeacon', { value: jest.fn() });
  * -------------------------------- */
 
 describe('ga4 -> track()', () => {
+  jest.setTimeout(30000);
+
   const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
   Object.defineProperties(document, {
@@ -126,16 +128,79 @@ describe('ga4 -> track()', () => {
     track(trackingId);
 
     expect(navigator.sendBeacon).toBeCalledTimes(1);
-    expect(navigator.sendBeacon).toBeCalledWith(expect.stringContaining('_fv=1'));
-    expect(navigator.sendBeacon).toBeCalledWith(expect.stringContaining('_ss=1'));
-    expect(navigator.sendBeacon).toBeCalledWith(expect.stringContaining('sct=1'));
+    expect(navigator.sendBeacon).toHaveBeenNthCalledWith(
+      1,
+      expect.stringContaining(`${param.firstVisit}=1`)
+    );
+    expect(navigator.sendBeacon).toHaveBeenNthCalledWith(
+      1,
+      expect.stringContaining(`${param.sessionStart}=1`)
+    );
+    expect(navigator.sendBeacon).toHaveBeenNthCalledWith(
+      1,
+      expect.stringContaining(`${param.sessionCount}=1`)
+    );
 
     track(trackingId);
 
     expect(navigator.sendBeacon).toBeCalledTimes(2);
-    expect(navigator.sendBeacon).not.nthCalledWith(2, expect.stringContaining('_fv=1'));
-    expect(navigator.sendBeacon).not.nthCalledWith(2, expect.stringContaining('_ss=1'));
-    expect(navigator.sendBeacon).toBeCalledWith(expect.stringContaining('sct=1'));
+
+    expect(navigator.sendBeacon).not.toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining(`${param.firstVisit}=1`)
+    );
+
+    expect(navigator.sendBeacon).not.toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining(`${param.sessionStart}=1`)
+    );
+
+    expect(navigator.sendBeacon).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining(`${param.sessionCount}=1`)
+    );
+  });
+
+  it('tracks engagement using document visibility and focus events', async () => {
+    const events = [...Array(4).keys()];
+    const timeExpected = events.length / 2;
+    let isVisible = 'visible';
+
+    const params = [
+      `${param.eventName}=user_engagement`,
+      `${param.enagementTime}=${timeExpected}`,
+    ];
+
+    track(trackingId);
+
+    expect(navigator.sendBeacon).toBeCalledTimes(1);
+
+    for (const _ of events) {
+      Object.defineProperty(document, 'visibilityState', {
+        value: (isVisible = isVisible === 'visible' ? 'hidden' : 'visible'),
+        writable: true,
+      });
+
+      document.dispatchEvent(new Event('visibilitychange'));
+
+      await sleep(1);
+    }
+
+    window.dispatchEvent(new Event('blur'));
+
+    await sleep(2);
+
+    window.dispatchEvent(new Event('focus'));
+    window.dispatchEvent(new Event('beforeunload'));
+
+    expect(navigator.sendBeacon).toBeCalledTimes(2);
+
+    params.forEach((param) =>
+      expect(navigator.sendBeacon).toHaveBeenNthCalledWith(
+        2,
+        expect.stringContaining(param)
+      )
+    );
   });
 
   it('defines the correct query param when sending a custom event', () => {
@@ -226,32 +291,5 @@ describe('ga4 -> track()', () => {
     await sleep();
 
     expect(navigator.sendBeacon).toBeCalledTimes(2);
-  });
-
-  it('tracks engagement using document visibility event', async () => {
-    const events = [...Array(4).keys()];
-    let isVisible = 'visible';
-
-    track(trackingId);
-
-    expect(navigator.sendBeacon).toBeCalledTimes(1);
-
-    for (const time of events) {
-      Object.defineProperty(document, 'visibilityState', {
-        value: (isVisible = isVisible === 'visible' ? 'hidden' : 'visible'),
-        writable: true,
-      });
-
-      document.dispatchEvent(new Event('visibilitychange'));
-
-      await sleep(time * 0.5);
-    }
-
-    window.dispatchEvent(new Event('beforeunload'));
-
-    expect(navigator.sendBeacon).toBeCalledTimes(2);
-    expect(navigator.sendBeacon).toBeCalledWith(
-      expect.stringContaining(`${param.eventName}=user_engagement`)
-    );
   });
 });
