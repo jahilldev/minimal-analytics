@@ -52,7 +52,6 @@ const autoTrack = isBrowser && window.minimalAnalytics?.autoTrack;
 const analyticsEndpoint = 'https://www.google-analytics.com/g/collect';
 const searchTerms = ['q', 's', 'search', 'query', 'keyword'];
 let trackCalled = false;
-let eventsBound = false;
 let clickHandler = null;
 let scrollHandler = null;
 let unloadHandler = null;
@@ -258,11 +257,10 @@ function onUnloadEvent(trackingId: string) {
  * -------------------------------- */
 
 function bindEvents(trackingId: string) {
-  if (eventsBound) {
+  if (trackCalled) {
     return;
   }
 
-  eventsBound = true;
   clickHandler = onClickEvent.bind(null, trackingId);
   scrollHandler = onScrollEvent.bind(null, trackingId);
   unloadHandler = onUnloadEvent.bind(null, trackingId);
@@ -295,9 +293,9 @@ function track(...args: any[]) {
 
   navigator.sendBeacon(`${endpoint}?${queryParams}`);
 
-  trackCalled = true;
-
   bindEvents(trackingId);
+
+  trackCalled = true;
 }
 
 /* -----------------------------------
