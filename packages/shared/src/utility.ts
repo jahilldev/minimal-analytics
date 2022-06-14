@@ -78,7 +78,7 @@ function isTargetElement(element: Element, selector: string): Element | null {
   let target = element;
 
   while (target) {
-    if (target?.matches(selector)) {
+    if (target?.matches && target?.matches(selector)) {
       break;
     }
 
