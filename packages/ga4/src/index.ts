@@ -305,7 +305,7 @@ function track(...args: any[]) {
  * -------------------------------- */
 
 if (autoTrack) {
-  track(window.minimalAnalytics?.trackingId);
+  track();
 }
 
 /* -----------------------------------
