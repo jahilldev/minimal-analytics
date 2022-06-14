@@ -53,7 +53,6 @@ const analyticsEndpoint = 'https://www.google-analytics.com/g/collect';
 const searchTerms = ['q', 's', 'search', 'query', 'keyword'];
 let trackCalled = false;
 let clickHandler = null;
-let mouseHandler = null;
 let scrollHandler = null;
 let unloadHandler = null;
 let engagementTimes = [[Date.now()]];
