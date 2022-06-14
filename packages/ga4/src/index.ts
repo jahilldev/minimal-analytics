@@ -53,6 +53,7 @@ const analyticsEndpoint = 'https://www.google-analytics.com/g/collect';
 const searchTerms = ['q', 's', 'search', 'query', 'keyword'];
 let trackCalled = false;
 let clickHandler = null;
+let mouseHandler = null;
 let scrollHandler = null;
 let unloadHandler = null;
 let engagementTimes = [[Date.now()]];
@@ -218,14 +219,14 @@ function onBlurEvent() {
  *
  * -------------------------------- */
 
-function onFocusEvent() {
+const onFocusEvent = debounce(() => {
   const timeIndex = engagementTimes.length - 1;
   const [, isHidden] = engagementTimes[timeIndex];
 
   if (isHidden) {
     engagementTimes.push([Date.now()]);
   }
-}
+});
 
 /* -----------------------------------
  *
@@ -297,6 +298,7 @@ function bindEvents(trackingId: string) {
   unloadHandler = onUnloadEvent.bind(null, trackingId);
 
   document.addEventListener('visibilitychange', onVisibilityChange);
+  document.addEventListener('mouseover', onFocusEvent);
   document.addEventListener('scroll', scrollHandler);
   document.addEventListener('click', clickHandler);
 
