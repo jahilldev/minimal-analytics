@@ -54,7 +54,7 @@ Object.defineProperty(navigator, 'sendBeacon', { value: jest.fn() });
  * -------------------------------- */
 
 describe('ga4 -> track()', () => {
-  jest.setTimeout(30000);
+  jest.setTimeout(15000);
 
   const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
