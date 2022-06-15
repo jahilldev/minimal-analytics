@@ -93,9 +93,10 @@ This value will supercede the default Google Analytics endpoint if defined.
 
 # CDN
 
-If you're not running or building your application in a Node environment, you can make use of the following CDN to include the script on your page:
+If you're not running or building your application in a Node environment, you can use one of the following CDN's to include the script on your page:
 
-https://unpkg.com/@minimal-analytics/ga4/dist/index.js
+- https://unpkg.com/@minimal-analytics/ga4/dist/index.js
+- https://cdn.jsdelivr.net/npm/@minimal-analytics/ga4/dist/index.js
 
 Alternatively, you can download the script from the link above and host it yourself.
 
