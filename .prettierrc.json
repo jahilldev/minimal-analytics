@@ -4,6 +4,5 @@
   "semi": true,
   "printWidth": 92,
   "singleQuote": true,
-  "eslintIntegration": false,
-  "tslintIntegration": true
+  "eslintIntegration": true
 }
