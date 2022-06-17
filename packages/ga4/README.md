@@ -64,7 +64,7 @@ The default event type of `page_view` can be overriden by providing the relevant
 track({ type: 'user_signup', event: { 'epn.user_id': 12345, 'ep.user_name': 'John', });
 ```
 
-**Note**: It's generally best pratice (or advised) to prefix any `event` properties with `ep.` or `epn.` to ensure there are no future conflicts with official GA4 parameters. If you require GA4 to parse a parameter as a number, use the prefix `epn.`, if not, use `ep.` at the start of your object key.
+**Note**: It's generally best practice (or advised) to prefix any `event` properties with `ep.` or `epn.` to ensure there are no future conflicts with official GA4 parameters. If you require GA4 to parse a parameter as a number, use the prefix `epn.`, if not, use `ep.` at the start of your object key.
 
 ## Onload
 
