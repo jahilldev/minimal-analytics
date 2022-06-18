@@ -98,7 +98,7 @@ If you're not running or building your application in a Node environment, you ca
 - https://unpkg.com/@minimal-analytics/ga4/dist/index.js
 - https://cdn.jsdelivr.net/npm/@minimal-analytics/ga4/dist/index.js
 
-Alternatively, you can download the script from the link above and host it yourself.
+Alternatively, you can download the script from any of the links above and host it yourself.
 
 You must enable `autoTrack` to use `ga4` in this way, see [Onload](#onload) for further instructions.
 
