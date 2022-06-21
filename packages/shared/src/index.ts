@@ -5,4 +5,4 @@
  * -------------------------------- */
 
 export * from './utility';
-export * from './payload';
+export * from './payloads';

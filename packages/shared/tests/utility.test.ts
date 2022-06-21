@@ -86,7 +86,7 @@ describe('shared -> utility', () => {
       wrapper.innerHTML = html;
 
       const target = wrapper.querySelector('span');
-      const result = isTargetElement(target, selector);
+      const result = isTargetElement(target as Element, selector);
 
       expect(result).not.toBe(null);
       expect(result?.tagName.toLowerCase()).toBe(selector);
@@ -100,7 +100,7 @@ describe('shared -> utility', () => {
       wrapper.innerHTML = html;
 
       const target = wrapper.querySelector('span');
-      const result = isTargetElement(target, selector);
+      const result = isTargetElement(target as Element, selector);
 
       expect(result).toBe(null);
       expect(result?.tagName.toLowerCase()).not.toBe(selector);
