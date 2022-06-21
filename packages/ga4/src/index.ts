@@ -203,14 +203,14 @@ function onClickEvent(trackingId: string, event: Event) {
  *
  * -------------------------------- */
 
-function onBlurEvent() {
+const onBlurEvent = debounce(() => {
   const timeIndex = engagementTimes.length - 1;
   const [, isHidden] = engagementTimes[timeIndex];
 
   if (!isHidden) {
     engagementTimes[timeIndex].push(Date.now());
   }
-}
+});
 
 /* -----------------------------------
  *
