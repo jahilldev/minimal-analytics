@@ -33,7 +33,7 @@ jest.mock('../src/utility', () => ({
  *
  * -------------------------------- */
 
-describe('shared -> payload', () => {
+describe('shared -> payloads', () => {
   describe('getDocument', () => {
     document.title = testTitle;
 
