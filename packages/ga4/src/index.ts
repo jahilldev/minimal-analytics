@@ -277,7 +277,10 @@ const onScrollEvent = debounce((trackingId: string) => {
 function onUnloadEvent(trackingId: string) {
   track(trackingId, {
     type: eventKeys.userEngagement,
-    event: [[param.enagementTime, getActiveTime()]],
+    event: [
+      [param.enagementTime, getActiveTime()],
+      [`${param.eventParam}.engagement_times`, engagementTimes.toString()],
+    ],
   });
 }
 

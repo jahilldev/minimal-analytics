@@ -4,7 +4,7 @@
  *
  * -------------------------------- */
 
-function debounce(callback: TimerHandler, frequency = 500, timer = 0) {
+function debounce(callback: TimerHandler, frequency = 300, timer = 0) {
   return (...args) => (
     clearTimeout(timer), (timer = setTimeout(callback, frequency, ...args))
   );
