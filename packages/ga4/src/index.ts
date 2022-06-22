@@ -279,7 +279,7 @@ function onUnloadEvent(trackingId: string) {
     type: eventKeys.userEngagement,
     event: [
       [param.enagementTime, getActiveTime()],
-      [`${param.eventParam}.engagement_times`, engagementTimes.toString()],
+      [`${param.eventParam}.engagement_sequence`, engagementTimes.toString()],
     ],
   });
 }
