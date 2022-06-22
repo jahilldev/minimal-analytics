@@ -215,14 +215,14 @@ function onClickEvent(trackingId: string, event: Event) {
  *
  * -------------------------------- */
 
-const onBlurEvent = debounce(() => {
+function onBlurEvent() {
   const timeIndex = engagementTimes.length - 1;
   const [, isHidden] = engagementTimes[timeIndex];
 
   if (!isHidden) {
     engagementTimes[timeIndex].push(Date.now());
   }
-});
+}
 
 /* -----------------------------------
  *
@@ -230,14 +230,14 @@ const onBlurEvent = debounce(() => {
  *
  * -------------------------------- */
 
-const onFocusEvent = debounce(() => {
+function onFocusEvent() {
   const timeIndex = engagementTimes.length - 1;
   const [, isHidden] = engagementTimes[timeIndex];
 
   if (isHidden) {
     engagementTimes.push([Date.now()]);
   }
-});
+}
 
 /* -----------------------------------
  *
@@ -248,7 +248,12 @@ const onFocusEvent = debounce(() => {
 function onVisibilityChange() {
   const timeIndex = engagementTimes.length - 1;
   const [, isHidden] = engagementTimes[timeIndex];
-  const isVisible = document.visibilityState === 'visible';
+  const isVisible = ['hidden', 'visible'].indexOf(document.visibilityState);
+  const isValid = isVisible !== -1;
+
+  if (!isValid) {
+    return;
+  }
 
   if (!isVisible) {
     !isHidden && engagementTimes[timeIndex].push(Date.now());
@@ -256,7 +261,7 @@ function onVisibilityChange() {
     return;
   }
 
-  engagementTimes.push([Date.now()]);
+  isHidden && engagementTimes.push([Date.now()]);
 }
 
 /* -----------------------------------
