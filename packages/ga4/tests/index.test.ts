@@ -28,6 +28,7 @@ const testAnchor = `
     <a href="${testLink}" id="${testId}" class="${testClass}">
       <span>${testTitle}</span>
     </a>
+    <a href="/" id="internal">${testTitle}</a>
   </main>
 `;
 
@@ -236,7 +237,7 @@ describe('ga4 -> track()', () => {
     expect(navigator.sendBeacon).toBeCalledWith(expect.stringContaining(testEndpoint));
   });
 
-  it('triggers a tracking event when a target element is clicked', async () => {
+  it('triggers a tracking event when an external link is clicked', async () => {
     const params = [
       `${param.eventName}=click`,
       `${param.eventParam}.link_id=${testId}`,
@@ -268,6 +269,23 @@ describe('ga4 -> track()', () => {
         expect.stringContaining(param)
       )
     );
+  });
+
+  it('does not trigger a tracking event when an internal link is clicked', () => {
+    root.innerHTML = testAnchor;
+
+    track(trackingId);
+
+    expect(navigator.sendBeacon).toBeCalledTimes(1);
+
+    const link = root.querySelector('a#internal');
+    const event = new CustomEvent('click');
+
+    Object.defineProperty(event, 'target', { value: link });
+
+    document.dispatchEvent(event);
+
+    expect(navigator.sendBeacon).toBeCalledTimes(1);
   });
 
   it('triggers a tracking event once when scroll is 90% of window', async () => {
