@@ -248,10 +248,10 @@ function onFocusEvent() {
 function onVisibilityChange() {
   const timeIndex = engagementTimes.length - 1;
   const [, isHidden] = engagementTimes[timeIndex];
-  const isVisible = ['hidden', 'visible'].indexOf(document.visibilityState);
-  const isValid = isVisible !== -1;
+  const stateIndex = ['hidden', 'visible'].indexOf(document.visibilityState);
+  const isVisible = Boolean(stateIndex);
 
-  if (!isValid) {
+  if (stateIndex === -1) {
     return;
   }
 
