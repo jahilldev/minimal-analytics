@@ -189,7 +189,7 @@ function onClickEvent(trackingId: string, event: Event) {
   const elementParam = `${param.eventParam}.${elementType}`;
   const hrefAttr = targetElement?.getAttribute('href');
   const { isExternal, hostname } = getUrlData(hrefAttr);
-  const isInternalLink = elementType === 'link' && hostname && !isExternal;
+  const isInternalLink = elementType === 'link' && !isExternal;
 
   if (!targetElement || isInternalLink) {
     return;

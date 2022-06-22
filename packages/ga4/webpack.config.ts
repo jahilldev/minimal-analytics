@@ -56,7 +56,7 @@ const defaultConfig = {
 const config = ({ mode }): Configuration[] =>
   outputFiles.map(({ target, filename, ...config }) => ({
     ...defaultConfig,
-    mode: 'production',
+    mode: mode || 'development',
     target,
     devtool: mode === 'development' ? 'eval-source-map' : void 0,
     cache: mode === 'development',
