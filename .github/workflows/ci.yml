@@ -18,6 +18,13 @@ jobs:
         with:
           node-version: '16.x'
 
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('yarn.lock') }}
+          restore-keys: npm-
+
       - name: Installing dependencies
         run: yarn
 
