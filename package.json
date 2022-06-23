@@ -12,7 +12,7 @@
     "prebuild": "lerna bootstrap --no-ci",
     "build": "run-s clean build:*",
     "build:packages": "lerna run build",
-    "publish": "lerna publish",
+    "publish": "lerna run publish",
     "lint": "lerna run lint",
     "test": "lerna run test"
   },
