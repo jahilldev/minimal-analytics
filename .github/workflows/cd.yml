@@ -15,7 +15,7 @@ jobs:
           node-version: '16.x'
           registry-url: https://registry.npmjs.org/
 
-      - name: Cache dependencies
+      - name: Cached dependencies
         uses: actions/cache@v2
         with:
           path: ~/.npm
