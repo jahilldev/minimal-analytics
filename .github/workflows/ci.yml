@@ -17,19 +17,15 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16.x'
-      - name: Cache node modules
-        uses: actions/cache@v1
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ~/.npm
-          # This uses the same name as the build-action so we can share the caches.
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-      - run: yarn
-      - run: yarn lint
-      - run: yarn build
-      - run: yarn test
+
+      - name: Installing dependencies
+        run: yarn
+
+      - name: Linting codebase
+        run: yarn lint
+
+      - name: Building packages
+        run: yarn build
+
+      - name: Running unit tests
+        run: yarn test

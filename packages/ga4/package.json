@@ -1,6 +1,6 @@
 {
   "name": "@minimal-analytics/ga4",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "description": "A tiny (2KB GZipped) version of GA4, complete with page view, engagement, scroll and click tracking",
   "author": "James Hill <contact@jameshill.dev>",
   "homepage": "https://github.com/jahilldev/minimal-analytics/tree/main/packages/ga4#readme",
@@ -26,7 +26,7 @@
     "tracking"
   ],
   "publishConfig": {
-    "registry": "https://registry.yarnpkg.com/",
+    "registry": "https://registry.npmjs.org",
     "access": "public"
   },
   "repository": {
