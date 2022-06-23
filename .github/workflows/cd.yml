@@ -67,7 +67,7 @@ jobs:
 
       - name: Publishing package
         if: steps.check.outputs.changed == 'true'
-        run: npm publish --dry-run
+        run: npm publish
         working-directory: ./packages/${{ matrix.package }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
