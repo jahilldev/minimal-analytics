@@ -10,6 +10,8 @@ This is intended for those who want to minimize the impact of third-party JavaSc
 
 At present, the following enhanced measurement events are supported:
 
+<br><br>
+
 ![Enhanced Measurement](https://github.com/jahilldev/minimal-analytics/blob/main/assets/ga4-support.jpg?raw=true)
 
 # Getting Started
