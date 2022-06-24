@@ -1,6 +1,10 @@
 name: CD
 
 on:
+  # TEMP
+  pull_request:
+    branches:
+      - '**'
   release:
     types: [published]
 
@@ -74,7 +78,7 @@ jobs:
 
       - name: Publishing package
         if: steps.check.outputs.changed == 'true'
-        run: npm publish
+        run: npm publish --dry-run
         working-directory: ./packages/${{ matrix.package }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
