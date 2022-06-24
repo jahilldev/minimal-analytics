@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/jahilldev/minimal-analytics/actions/workflows/ci.yml/badge.svg?)](https://github.com/jahilldev/minimal-analytics/actions/workflows/ci.yml)
 
-This package is a slimmed down (**2KB GZipped**), drop-in replacement for the official Google Analytics 4 library. It provides page view, engagement time, scroll, file download and click tracking events. Custom events can be handled in your application by calling `track` with your custom event type when needed.
+This package is a slimmed down (**2KB GZipped**), drop-in replacement for the official Google Analytics 4 library. It provides **page view**, **engagement time**, **scroll**, **file download** and **click tracking** events. Custom events can be handled in your application by calling `track` with your custom event type when needed.
 
 The package works by calling the Google Analytics API directly, no further integrations like GTM are required.
 
