@@ -8,6 +8,10 @@ The package works by calling the Google Analytics API directly, no further integ
 
 This is intended for those who want to minimize the impact of third-party JavaScript, while maintaining essential analytics tracking. If you require more advanced tracking (AdWords, etc), it's recommended to use the official library instead.
 
+At present, the following enhanced measurement events are supported:
+
+![Enhanced Measurement](../../assets/ga4-support.jpg?raw=true)
+
 # Getting Started
 
 **N.B.** The instructions below assume a Node environment is available. If you're not running or building your application in Node, jump to the [CDN section](#cdn).
