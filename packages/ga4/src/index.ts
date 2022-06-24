@@ -103,16 +103,16 @@ function getEventMeta({ type = '', event }: Pick<IProps, 'type' | 'event'>) {
   const eventName = searchResults ? eventKeys.viewSearchResults : type;
   const searchTerm = searchTerms.find((term) => searchParams.get(term));
 
-  let payload = [
+  let eventParams = [
     [param.eventName, eventName],
     [`${param.eventParam}.search_term`, searchTerm || ''],
   ];
 
   if (event) {
-    payload = payload.concat(getEventParams(event));
+    eventParams = eventParams.concat(getEventParams(event));
   }
 
-  return payload;
+  return eventParams;
 }
 
 /* -----------------------------------
@@ -126,7 +126,7 @@ function getQueryParams(trackingId: string, { type, event, debug }: IProps) {
   const { firstVisit, sessionStart, sessionCount } = getSessionState(!trackCalled);
   const screen = self.screen || ({} as Screen);
 
-  let payload = [
+  let params = [
     [param.protocolVersion, '2'],
     [param.trackingId, trackingId],
     [param.pageId, getRandomId()],
@@ -145,10 +145,10 @@ function getQueryParams(trackingId: string, { type, event, debug }: IProps) {
     [param.screenResolution, `${screen.width}x${screen.height}`],
   ];
 
-  payload = payload.concat(getEventMeta({ type, event }));
-  payload = payload.filter(([, value]) => value);
+  params = params.concat(getEventMeta({ type, event }));
+  params = params.filter(([, value]) => value);
 
-  return new URLSearchParams(payload);
+  return new URLSearchParams(params);
 }
 
 /* -----------------------------------
@@ -200,7 +200,7 @@ function onClickEvent(trackingId: string, event: Event) {
     return;
   }
 
-  let payload: EventParams = [
+  let eventParams: EventParams = [
     [`${elementParam}_id`, targetElement.id],
     [`${elementParam}_classes`, targetElement.className],
     [`${elementParam}_text`, targetElement.textContent?.trim()],
@@ -211,7 +211,7 @@ function onClickEvent(trackingId: string, event: Event) {
   ];
 
   if (fileExtension) {
-    payload = payload.concat([
+    eventParams = eventParams.concat([
       [`${param.eventParam}.file_name`, pathname || hrefAttr],
       [`${param.eventParam}.file_extension`, fileExtension],
     ]);
@@ -219,7 +219,7 @@ function onClickEvent(trackingId: string, event: Event) {
 
   track(trackingId, {
     type: eventName,
-    event: payload,
+    event: eventParams,
   });
 }
 
@@ -291,9 +291,11 @@ const onScrollEvent = debounce((trackingId: string) => {
     return;
   }
 
+  const eventParams: EventParams = [[`${param.eventParamNumber}.percent_scrolled`, 90]];
+
   track(trackingId, {
     type: eventKeys.scroll,
-    event: [[`${param.eventParamNumber}.percent_scrolled`, 90]],
+    event: eventParams,
   });
 
   document.removeEventListener('scroll', scrollHandler);
@@ -306,12 +308,14 @@ const onScrollEvent = debounce((trackingId: string) => {
  * -------------------------------- */
 
 function onUnloadEvent(trackingId: string) {
+  const eventParams: EventParams = [
+    [param.enagementTime, getActiveTime()],
+    [`${param.eventParam}.engagement_sequence`, getActiveSequence()],
+  ];
+
   track(trackingId, {
     type: eventKeys.userEngagement,
-    event: [
-      [param.enagementTime, getActiveTime()],
-      [`${param.eventParam}.engagement_sequence`, getActiveSequence()],
-    ],
+    event: eventParams,
   });
 }
 
