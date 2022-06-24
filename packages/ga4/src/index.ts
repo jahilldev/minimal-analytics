@@ -198,26 +198,23 @@ function onClickEvent(trackingId: string, event: Event) {
   }
 
   const eventName = fileExtension ? eventKeys.fileDownload : eventKeys.click;
-
   const fileParams = fileExtension && [
     [`${param.eventParam}.file_name`, pathname || hrefAttr],
     [`${param.eventParam}.file_extension`, fileExtension],
   ];
 
-  const payload = [
-    [`${elementParam}_id`, targetElement.id],
-    [`${elementParam}_classes`, targetElement.className],
-    [`${elementParam}_text`, targetElement.textContent?.trim()],
-    [`${elementParam}_url`, hrefAttr],
-    [`${elementParam}_domain`, hostname],
-    [`${param.eventParam}.outbound`, `${isExternal}`],
-    [param.enagementTime, getActiveTime()],
-    ...(fileExtension ? fileParams : []),
-  ];
-
   track(trackingId, {
     type: eventName,
-    event: payload,
+    event: [
+      [`${elementParam}_id`, targetElement.id],
+      [`${elementParam}_classes`, targetElement.className],
+      [`${elementParam}_text`, targetElement.textContent?.trim()],
+      [`${elementParam}_url`, hrefAttr],
+      [`${elementParam}_domain`, hostname],
+      [`${param.eventParam}.outbound`, `${isExternal}`],
+      [param.enagementTime, getActiveTime()],
+      ...(fileExtension ? fileParams : []),
+    ],
   });
 }
 
