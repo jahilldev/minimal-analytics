@@ -6,9 +6,8 @@ import { getRandomId } from './utility';
  *
  * -------------------------------- */
 
-type EventParams =
-  | Record<string, string | number | undefined>
-  | [string, string | number | undefined | null][];
+type ParamValue = string | number | undefined | null;
+type EventParams = Record<string, ParamValue> | [string, ParamValue][];
 
 /* -----------------------------------
  *
