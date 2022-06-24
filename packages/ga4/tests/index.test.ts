@@ -20,7 +20,9 @@ const testHeight = 900;
 const testEvent = 'custom_event';
 const testData = Math.random();
 const testDomain = 'google.com';
+const testExtension = 'pdf';
 const testLink = `https://${testDomain}/hello`;
+const testFile = `/assets/junglistmanifesto.${testExtension}`;
 const testId = 'testId';
 const testClass = 'testClass';
 const testAnchor = `
@@ -29,6 +31,7 @@ const testAnchor = `
       <span>${testTitle}</span>
     </a>
     <a href="/" id="internal">${testTitle}</a>
+    <a href="${testFile}" id="download">${testTitle}</a>
   </main>
 `;
 
@@ -286,6 +289,40 @@ describe('ga4 -> track()', () => {
     document.dispatchEvent(event);
 
     expect(navigator.sendBeacon).toBeCalledTimes(1);
+  });
+
+  it('triggers a download tracking event when a file link is clicked', async () => {
+    const params = [
+      `${param.eventName}=file_download`,
+      `${param.eventParam}.link_id=download`,
+      `${param.eventParam}.link_text=${testTitle}`,
+      `${param.eventParam}.link_url=${encodeURIComponent(testFile)}`,
+      `${param.eventParam}.file_name=${encodeURIComponent(testFile)}`,
+      `${param.eventParam}.file_extension=${testExtension}`,
+      `${param.eventParam}.outbound=false`,
+    ];
+
+    root.innerHTML = testAnchor;
+
+    track(trackingId);
+
+    expect(navigator.sendBeacon).toBeCalledTimes(1);
+
+    const link = root.querySelector('#download');
+    const event = new CustomEvent('click');
+
+    Object.defineProperty(event, 'target', { value: link });
+
+    document.dispatchEvent(event);
+
+    expect(navigator.sendBeacon).toBeCalledTimes(2);
+
+    params.forEach((param) =>
+      expect(navigator.sendBeacon).toHaveBeenNthCalledWith(
+        2,
+        expect.stringContaining(param)
+      )
+    );
   });
 
   it('triggers a tracking event once when scroll is 90% of window', async () => {
