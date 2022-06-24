@@ -1,4 +1,4 @@
-import { getClientId, getDocument, getEventParams } from '../src/payloads';
+import { EventParams, getClientId, getDocument, getEventParams } from '../src/payloads';
 
 /* -----------------------------------
  *
@@ -95,14 +95,14 @@ describe('shared -> payloads', () => {
     });
 
     it('returns input if already a multidimensional array and casts to string', () => {
-      const event = [
+      const event: EventParams = [
         [testQuery1, testStringValue],
         [testQuery2, testNumberValue],
       ];
 
       const result = getEventParams(event);
 
-      expect(result).toEqual(event.map((items) => items.map((item) => item.toString())));
+      expect(result).toEqual(event.map((items) => items.map((item) => item?.toString())));
     });
   });
 });
