@@ -29,8 +29,19 @@ const param = {
 
 /* -----------------------------------
  *
+ * Filetypes
+ *
+ * -------------------------------- */
+
+const files = [
+  'pdf|xlsx?|docx?|txt|rtf|csv|exe|key|pp(s|t|tx)|7z|pkg|rar|gz|zip|avi|',
+  'mov|mp4|mpe?g|wmv|midi?|mp3|wav|wma',
+];
+
+/* -----------------------------------
+ *
  * Export
  *
  * -------------------------------- */
 
-export { param };
+export { param, files };

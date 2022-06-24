@@ -11,7 +11,7 @@ import {
   getEventParams,
 } from '@minimal-analytics/shared';
 import type { EventParams } from '@minimal-analytics/shared';
-import { param } from './model';
+import { param, files } from './model';
 
 /* -----------------------------------
  *
@@ -69,6 +69,7 @@ const eventKeys = {
   click: 'click',
   viewSearchResults: 'view_search_results',
   userEngagement: 'user_engagement',
+  fileDownload: 'file_download',
 };
 
 /* -----------------------------------
@@ -188,24 +189,35 @@ function onClickEvent(trackingId: string, event: Event) {
   const elementType = tagName === 'a' ? 'link' : tagName;
   const elementParam = `${param.eventParam}.${elementType}`;
   const hrefAttr = targetElement?.getAttribute('href');
-  const { isExternal, hostname } = getUrlData(hrefAttr);
+  const { isExternal, hostname, pathname } = getUrlData(hrefAttr);
   const isInternalLink = elementType === 'link' && !isExternal;
+  const [fileExtension] = hrefAttr?.match(new RegExp(files.join(''), 'g')) || [];
 
-  if (!targetElement || isInternalLink) {
+  if (!targetElement || (isInternalLink && !fileExtension)) {
     return;
   }
 
+  const eventName = fileExtension ? eventKeys.fileDownload : eventKeys.click;
+
+  const fileParams = fileExtension && [
+    [`${param.eventParam}.file_name`, pathname || hrefAttr],
+    [`${param.eventParam}.file_extension`, fileExtension],
+  ];
+
+  const payload = [
+    [`${elementParam}_id`, targetElement.id],
+    [`${elementParam}_classes`, targetElement.className],
+    [`${elementParam}_text`, targetElement.textContent?.trim()],
+    [`${elementParam}_url`, hrefAttr],
+    [`${elementParam}_domain`, hostname],
+    [`${param.eventParam}.outbound`, `${isExternal}`],
+    [param.enagementTime, getActiveTime()],
+    ...(fileExtension ? fileParams : []),
+  ];
+
   track(trackingId, {
-    type: eventKeys.click,
-    event: [
-      [`${elementParam}_id`, targetElement.id],
-      [`${elementParam}_classes`, targetElement.className],
-      [`${elementParam}_text`, targetElement.textContent?.trim()],
-      [`${elementParam}_url`, hrefAttr],
-      [`${elementParam}_domain`, hostname],
-      [`${param.eventParam}.outbound`, `${isExternal}`],
-      [param.enagementTime, getActiveTime()],
-    ],
+    type: eventName,
+    event: payload,
   });
 }
 
