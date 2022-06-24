@@ -191,7 +191,7 @@ function onClickEvent(trackingId: string, event: Event) {
   const hrefAttr = targetElement?.getAttribute('href');
   const { isExternal, hostname, pathname } = getUrlData(hrefAttr);
   const isInternalLink = elementType === 'link' && !isExternal;
-  const [fileExtension] = hrefAttr?.match(new RegExp(files.join(''), 'g')) || [];
+  const [fileExtension] = hrefAttr?.match(new RegExp(files.join('|'), 'g')) || [];
 
   if (!targetElement || (isInternalLink && !fileExtension)) {
     return;
