@@ -51,11 +51,11 @@ const isBrowser = typeof window !== 'undefined';
 const autoTrack = isBrowser && window.minimalAnalytics?.autoTrack;
 const analyticsEndpoint = 'https://www.google-analytics.com/g/collect';
 const searchTerms = ['q', 's', 'search', 'query', 'keyword'];
-let trackCalled = false;
-let clickHandler = null;
-let scrollHandler = null;
-let unloadHandler = null;
+let clickHandler: EventListener;
+let scrollHandler: EventListener;
+let unloadHandler: EventListener;
 let engagementTimes = [[Date.now()]];
+let trackCalled = false;
 
 /* -----------------------------------
  *
@@ -78,7 +78,7 @@ const eventKeys = {
  *
  * -------------------------------- */
 
-function getArguments(args: any[]): [string, IProps] {
+function getArguments(args: any[]): [string | undefined, IProps] {
   const globalId = window.minimalAnalytics?.trackingId;
   const trackingId = typeof args[0] === 'string' ? args[0] : globalId;
   const props = typeof args[0] === 'object' ? args[0] : args[1] || {};
@@ -92,7 +92,7 @@ function getArguments(args: any[]): [string, IProps] {
  *
  * -------------------------------- */
 
-function getEventMeta({ type, event }: Pick<IProps, 'type' | 'event'>) {
+function getEventMeta({ type = '', event }: Pick<IProps, 'type' | 'event'>) {
   const searchString = document.location.search;
   const searchParams = new URLSearchParams(searchString);
 
@@ -105,7 +105,7 @@ function getEventMeta({ type, event }: Pick<IProps, 'type' | 'event'>) {
 
   let payload = [
     [param.eventName, eventName],
-    [`${param.eventParam}.search_term`, searchTerm],
+    [`${param.eventParam}.search_term`, searchTerm || ''],
   ];
 
   if (event) {
@@ -130,7 +130,7 @@ function getQueryParams(trackingId: string, { type, event, debug }: IProps) {
     [param.protocolVersion, '2'],
     [param.trackingId, trackingId],
     [param.pageId, getRandomId()],
-    [param.language, (navigator.language || '').toLowerCase() || void 0],
+    [param.language, (navigator.language || '').toLowerCase()],
     [param.clientId, getClientId()],
     [param.firstVisit, firstVisit],
     [param.hitCount, '1'],
@@ -138,7 +138,7 @@ function getQueryParams(trackingId: string, { type, event, debug }: IProps) {
     [param.sessionCount, sessionCount],
     [param.sessionEngagement, '1'],
     [param.sessionStart, sessionStart],
-    [param.debug, debug ? '1' : void 0],
+    [param.debug, debug ? '1' : ''],
     [param.referrer, referrer],
     [param.location, location],
     [param.title, title],
@@ -187,34 +187,39 @@ function onClickEvent(trackingId: string, event: Event) {
   const targetElement = isTargetElement(event.target as Element, 'a, button');
   const tagName = targetElement?.tagName?.toLowerCase();
   const elementType = tagName === 'a' ? 'link' : tagName;
-  const elementParam = `${param.eventParam}.${elementType}`;
-  const hrefAttr = targetElement?.getAttribute('href');
+  const hrefAttr = targetElement?.getAttribute('href') || void 0;
+
   const { isExternal, hostname, pathname } = getUrlData(hrefAttr);
   const isInternalLink = elementType === 'link' && !isExternal;
   const [fileExtension] = hrefAttr?.match(new RegExp(files.join('|'), 'g')) || [];
+
+  const eventName = fileExtension ? eventKeys.fileDownload : eventKeys.click;
+  const elementParam = `${param.eventParam}.${elementType}`;
 
   if (!targetElement || (isInternalLink && !fileExtension)) {
     return;
   }
 
-  const eventName = fileExtension ? eventKeys.fileDownload : eventKeys.click;
-  const fileParams = fileExtension && [
-    [`${param.eventParam}.file_name`, pathname || hrefAttr],
-    [`${param.eventParam}.file_extension`, fileExtension],
+  let payload: EventParams = [
+    [`${elementParam}_id`, targetElement.id],
+    [`${elementParam}_classes`, targetElement.className],
+    [`${elementParam}_text`, targetElement.textContent?.trim()],
+    [`${elementParam}_url`, hrefAttr],
+    [`${elementParam}_domain`, hostname],
+    [`${param.eventParam}.outbound`, `${isExternal}`],
+    [param.enagementTime, getActiveTime()],
   ];
+
+  if (fileExtension) {
+    payload = payload.concat([
+      [`${param.eventParam}.file_name`, pathname || hrefAttr],
+      [`${param.eventParam}.file_extension`, fileExtension],
+    ]);
+  }
 
   track(trackingId, {
     type: eventName,
-    event: [
-      [`${elementParam}_id`, targetElement.id],
-      [`${elementParam}_classes`, targetElement.className],
-      [`${elementParam}_text`, targetElement.textContent?.trim()],
-      [`${elementParam}_url`, hrefAttr],
-      [`${elementParam}_domain`, hostname],
-      [`${param.eventParam}.outbound`, `${isExternal}`],
-      [param.enagementTime, getActiveTime()],
-      ...(fileExtension ? fileParams : []),
-    ],
+    event: payload,
   });
 }
 
@@ -377,4 +382,4 @@ if (autoTrack) {
  *
  * -------------------------------- */
 
-export { track };
+export { EventParams, track };
