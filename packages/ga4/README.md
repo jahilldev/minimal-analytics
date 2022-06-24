@@ -1,6 +1,6 @@
 # @minimal-analytics/ga4
 
-[![CI](https://github.com/jahilldev/minimal-analytics/actions/workflows/ci.yml/badge.svg)](https://github.com/jahilldev/minimal-analytics/actions/workflows/ci.yml)
+[![CI](https://github.com/jahilldev/minimal-analytics/actions/workflows/ci.yml/badge.svg?)](https://github.com/jahilldev/minimal-analytics/actions/workflows/ci.yml)
 
 This package is a slimmed down (**2KB GZipped**), drop-in replacement for the official Google Analytics 4 library. It provides page view, engagement time, scroll, file download and click tracking events. Custom events can be handled in your application by calling `track` with your custom event type when needed.
 
