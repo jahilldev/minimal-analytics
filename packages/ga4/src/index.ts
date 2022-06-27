@@ -153,18 +153,6 @@ function getQueryParams(trackingId: string, { type, event, debug }: IProps) {
 
 /* -----------------------------------
  *
- * ActiveSequence
- *
- * -------------------------------- */
-
-function getActiveSequence() {
-  return engagementTimes
-    .map(([visible, hidden = Date.now()]) => [visible, hidden])
-    .toString();
-}
-
-/* -----------------------------------
- *
  * ActiveTime
  *
  * -------------------------------- */
@@ -308,10 +296,7 @@ const onScrollEvent = debounce((trackingId: string) => {
  * -------------------------------- */
 
 function onUnloadEvent(trackingId: string) {
-  const eventParams: EventParams = [
-    [param.enagementTime, getActiveTime()],
-    [`${param.eventParam}.engagement_sequence`, getActiveSequence()],
-  ];
+  const eventParams: EventParams = [[param.enagementTime, getActiveTime()]];
 
   track(trackingId, {
     type: eventKeys.userEngagement,
