@@ -1,4 +1,4 @@
-import { EventParams, getClientId, getDocument, getEventParams } from '../src/payloads';
+import { EventParams, getClientId, getDocument, getEventParams } from '../src/values';
 
 /* -----------------------------------
  *
@@ -33,7 +33,7 @@ jest.mock('../src/utility', () => ({
  *
  * -------------------------------- */
 
-describe('shared -> payloads', () => {
+describe('shared -> values', () => {
   describe('getDocument', () => {
     document.title = testTitle;
 
