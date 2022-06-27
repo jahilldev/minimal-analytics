@@ -12,7 +12,7 @@ import { param } from './src/model';
 
 const outputFiles = [
   // { target: 'es5', filename: '[name].es5.js' },
-  { target: 'es2018', filename: '[name].js' },
+  { target: 'es2020', filename: '[name].js' },
 ];
 
 /* -----------------------------------
