@@ -72,6 +72,18 @@ track({ type: 'user_signup', event: { 'epn.user_id': 12345, 'ep.user_name': 'Joh
 
 **Note**: It's generally best practice (or advised) to prefix any `event` properties with `ep.` or `epn.` to ensure there are no future conflicts with official GA4 parameters. If you require GA4 to parse a parameter as a number, use the prefix `epn.`, if not, use `ep.` at the start of your object key.
 
+## Global
+
+If you'd like the `track` function to be defined on the Window, e.g `window.track()`, you'll need to define the following property prior to loading the `@minimal-analytics/ga4` package, or script:
+
+```js
+window.minimalAnalytics = {
+  defineGlobal: true,
+};
+```
+
+This will allow you to access the `track` function throughout your application.
+
 ## Onload
 
 If you'd prefer to let the `ga4` script initialise tracking itself when loaded, you can define the following property on the window, prior to including the script on the page:

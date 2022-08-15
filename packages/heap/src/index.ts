@@ -15,6 +15,7 @@ import { param } from './model';
 declare global {
   interface Window {
     minimalAnalytics?: {
+      defineGlobal?: boolean;
       analyticsEndpoint?: string;
       trackingId?: string;
       autoTrack?: boolean;

@@ -21,7 +21,9 @@ import { param, files } from './model';
 
 declare global {
   interface Window {
+    track?: typeof track;
     minimalAnalytics?: {
+      defineGlobal?: boolean;
       analyticsEndpoint?: string;
       trackingId?: string;
       autoTrack?: boolean;
@@ -48,6 +50,7 @@ interface IProps {
  * -------------------------------- */
 
 const isBrowser = typeof window !== 'undefined';
+const defineGlobal = isBrowser && window.minimalAnalytics?.defineGlobal;
 const autoTrack = isBrowser && window.minimalAnalytics?.autoTrack;
 const analyticsEndpoint = 'https://www.google-analytics.com/g/collect';
 const searchTerms = ['q', 's', 'search', 'query', 'keyword'];
@@ -353,6 +356,16 @@ function track(...args: any[]) {
   bindEvents(trackingId);
 
   trackCalled = true;
+}
+
+/* -----------------------------------
+ *
+ * Define
+ *
+ * -------------------------------- */
+
+if (defineGlobal) {
+  window.track = track;
 }
 
 /* -----------------------------------
