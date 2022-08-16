@@ -111,6 +111,7 @@ const config = ({ mode }): Configuration[] =>
                   'trackingId',
                   'autoTrack',
                   'analyticsEndpoint',
+                  'defineGlobal',
                   // prevent params being mangled
                   ...Object.keys(param),
                 ],
