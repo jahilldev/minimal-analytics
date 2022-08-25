@@ -54,6 +54,7 @@ const defineGlobal = isBrowser && window.minimalAnalytics?.defineGlobal;
 const autoTrack = isBrowser && window.minimalAnalytics?.autoTrack;
 const analyticsEndpoint = 'https://www.google-analytics.com/g/collect';
 const searchTerms = ['q', 's', 'search', 'query', 'keyword'];
+const clickTargets = 'a, button, input[type=submit], input[type=button]';
 let clickHandler: EventListener;
 let scrollHandler: EventListener;
 let unloadHandler: EventListener;
@@ -175,14 +176,16 @@ function getActiveTime() {
  * -------------------------------- */
 
 function onClickEvent(trackingId: string, event: Event) {
-  const targetElement = isTargetElement(event.target as Element, 'a, button');
+  const targetElement = isTargetElement(event.target as Element, clickTargets);
   const tagName = targetElement?.tagName?.toLowerCase();
   const elementType = tagName === 'a' ? 'link' : tagName;
   const hrefAttr = targetElement?.getAttribute('href') || void 0;
+  const downloadAttr = targetElement?.getAttribute('download') || void 0;
+  const fileUrl = downloadAttr || hrefAttr;
 
-  const { isExternal, hostname, pathname } = getUrlData(hrefAttr);
+  const { isExternal, hostname, pathname } = getUrlData(fileUrl);
   const isInternalLink = elementType === 'link' && !isExternal;
-  const [fileExtension] = hrefAttr?.match(new RegExp(files.join('|'), 'g')) || [];
+  const [fileExtension] = fileUrl?.match(new RegExp(files.join('|'), 'g')) || [];
 
   const eventName = fileExtension ? eventKeys.fileDownload : eventKeys.click;
   const elementParam = `${param.eventParam}.${elementType}`;
@@ -194,7 +197,9 @@ function onClickEvent(trackingId: string, event: Event) {
   let eventParams: EventParams = [
     [`${elementParam}_id`, targetElement.id],
     [`${elementParam}_classes`, targetElement.className],
+    [`${elementParam}_name`, targetElement?.getAttribute('name')?.trim()],
     [`${elementParam}_text`, targetElement.textContent?.trim()],
+    [`${elementParam}_value`, targetElement?.getAttribute('value')?.trim()],
     [`${elementParam}_url`, hrefAttr],
     [`${elementParam}_domain`, hostname],
     [`${param.eventParam}.outbound`, `${isExternal}`],
@@ -203,7 +208,7 @@ function onClickEvent(trackingId: string, event: Event) {
 
   if (fileExtension) {
     eventParams = eventParams.concat([
-      [`${param.eventParam}.file_name`, pathname || hrefAttr],
+      [`${param.eventParam}.file_name`, pathname || fileUrl],
       [`${param.eventParam}.file_extension`, fileExtension],
     ]);
   }
