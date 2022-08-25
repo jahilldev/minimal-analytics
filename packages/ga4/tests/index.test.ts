@@ -32,6 +32,7 @@ const testAnchor = `
     </a>
     <a href="/" id="internal">${testTitle}</a>
     <a href="${testFile}" id="download">${testTitle}</a>
+    <button download="${testFile}">${testTitle}</button>
   </main>
 `;
 
@@ -291,7 +292,7 @@ describe('ga4 -> track()', () => {
     expect(navigator.sendBeacon).toBeCalledTimes(1);
   });
 
-  it('triggers a download tracking event when a file link is clicked', async () => {
+  it('triggers a download tracking event when a file anchor is clicked', async () => {
     const params = [
       `${param.eventName}=file_download`,
       `${param.eventParam}.link_id=download`,
@@ -312,6 +313,38 @@ describe('ga4 -> track()', () => {
     const event = new CustomEvent('click');
 
     Object.defineProperty(event, 'target', { value: link });
+
+    document.dispatchEvent(event);
+
+    expect(navigator.sendBeacon).toBeCalledTimes(2);
+
+    params.forEach((param) =>
+      expect(navigator.sendBeacon).toHaveBeenNthCalledWith(
+        2,
+        expect.stringContaining(param)
+      )
+    );
+  });
+
+  it('triggers a download tracking event when an element with a download attribute is clicked', async () => {
+    const params = [
+      `${param.eventName}=file_download`,
+      `${param.eventParam}.button_text=${testTitle}`,
+      `${param.eventParam}.file_name=${encodeURIComponent(testFile)}`,
+      `${param.eventParam}.file_extension=${testExtension}`,
+      `${param.eventParam}.outbound=false`,
+    ];
+
+    root.innerHTML = testAnchor;
+
+    track(trackingId);
+
+    expect(navigator.sendBeacon).toBeCalledTimes(1);
+
+    const button = root.querySelector('button');
+    const event = new CustomEvent('click');
+
+    Object.defineProperty(event, 'target', { value: button });
 
     document.dispatchEvent(event);
 
