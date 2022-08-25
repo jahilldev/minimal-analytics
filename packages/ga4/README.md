@@ -72,6 +72,20 @@ track({ type: 'user_signup', event: { 'epn.user_id': 12345, 'ep.user_name': 'Joh
 
 **Note**: It's generally best practice (or advised) to prefix any `event` properties with `ep.` or `epn.` to ensure there are no future conflicts with official GA4 parameters. If you require GA4 to parse a parameter as a number, use the prefix `epn.`, if not, use `ep.` at the start of your object key.
 
+### Download
+
+Download tracking happens automatically based on whether or not an anchor's `href` or `download` attribute contains a supported file URL (see list [here](https://github.com/jahilldev/minimal-analytics/blob/main/packages/ga4/src/model.ts#L36)). If you provide downloads that are not accessible by the client, for example, behind a form submission or CSRF based system, you can apply a `download` attribute with a value of a valid link url to trigger the event.
+
+For example, all of these will trigger a GA4 download event:
+
+```html
+<a href="https://download.com/file.pdf">Download</a>
+<a href="https://download.com/file.pdf" download>Download</a>
+<button download="https://download.com/file.pdf">Download</button>
+<input type="submit" download="https://download.com/file.pdf" value="Download" />
+<input type="button" download="https://download.com/file.pdf" value="Download" />
+```
+
 ## Global
 
 If you'd like the `track` function to be defined on the Window, e.g `window.track()`, you'll need to define the following property prior to loading the `@minimal-analytics/ga4` package, or script:
