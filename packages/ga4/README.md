@@ -137,3 +137,8 @@ You must enable `autoTrack` to use `ga4` in this way, see [Onload](#onload) for 
 # Acknowledgement
 
 This package builds on the great work done by [David Künnen](https://github.com/DavidKuennen) and [Dariusz Więckiewicz](https://github.com/idarek). David's work on the small drop in replacement for Universal Analytics, and Dariusz's port over to GA4 were instrumental in providing a blue print for `@minimal-analytics/ga4`.
+
+# Integration
+## Integration with Hugo
+
+[Hugo](https://gohugo.io/) is one of the most popular open-source static site generators. Here's how to [integrate minimal analytics within Hugo]([https://discourse.gohugo.io/t/add-minimal-analytics-google-analytics-v4-to-hugo/39016](https://discourse.gohugo.io/t/add-minimal-analytics-google-analytics-v4-to-hugo/39016).
