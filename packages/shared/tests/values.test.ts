@@ -1,3 +1,4 @@
+import { getRandomId } from '../src/utility';
 import { EventParams, getClientId, getDocument, getEventParams } from '../src/values';
 
 /* -----------------------------------
@@ -14,8 +15,6 @@ const testQuery1 = 'testQuery1';
 const testQuery2 = 'testQuery2';
 const testStringValue = `testValue-${Math.random()}`;
 const testNumberValue = Math.random();
-const localUrl = 'http://localhost/test';
-const remoteUrl = 'https://www.google.com/test';
 
 /* -----------------------------------
  *
@@ -46,6 +45,31 @@ describe('shared -> values', () => {
         location: `http://${testHost}/`,
         pathname: '/',
         referrer: '',
+      });
+    });
+
+    describe('when document is not available', () => {
+      let documentSpy;
+
+      beforeEach(() => {
+        documentSpy = jest.spyOn(window, "document", "get");
+        documentSpy.mockImplementation(() => undefined);
+      });
+
+      afterEach(() => {
+        documentSpy.mockClear();
+      });
+
+      it('returns when document is not available', () => {
+
+        const result = getDocument();
+        expect(result).toEqual({
+          hostname: testHost,
+          title: undefined,
+          location: `http://${testHost}/`,
+          pathname: '/',
+          referrer: undefined,
+        });
       });
     });
   });
@@ -80,6 +104,21 @@ describe('shared -> values', () => {
       expect(result).toEqual(testClientId);
       expect(getSpy).toBeCalledWith(testKey);
       expect(setSpy).not.toBeCalledWith(testKey, result);
+    });
+
+    describe('when localStorage is not available', () => {
+      beforeEach(() => {
+        getSpy.mockReturnValue(null);
+      });
+
+      it('generates a new clientId', () => {
+        getClientId(testKey);
+        getClientId(testKey);
+
+        expect(getSpy).toHaveBeenCalledTimes(2);
+        expect(setSpy).toHaveBeenCalledTimes(2);
+        expect(getSpy).toBeCalledWith(testKey);
+      });
     });
   });
 

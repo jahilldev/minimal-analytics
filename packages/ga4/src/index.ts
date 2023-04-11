@@ -11,6 +11,7 @@ import {
   getEventParams,
 } from '@minimal-analytics/shared';
 import type { EventParams } from '@minimal-analytics/shared';
+import { sendBeacon } from '@minimal-analytics/shared';
 import { param, files } from './model';
 
 /* -----------------------------------
@@ -83,7 +84,7 @@ const eventKeys = {
  * -------------------------------- */
 
 function getArguments(args: any[]): [string | undefined, IProps] {
-  const globalId = window.minimalAnalytics?.trackingId;
+  const globalId = (isBrowser) ? window.minimalAnalytics?.trackingId : undefined;
   const trackingId = typeof args[0] === 'string' ? args[0] : globalId;
   const props = typeof args[0] === 'object' ? args[0] : args[1] || {};
 
@@ -97,7 +98,7 @@ function getArguments(args: any[]): [string | undefined, IProps] {
  * -------------------------------- */
 
 function getEventMeta({ type = '', event }: Pick<IProps, 'type' | 'event'>) {
-  const searchString = document.location.search;
+  const searchString = (isBrowser) ? document.location.search : self.location.search;
   const searchParams = new URLSearchParams(searchString);
 
   const searchResults = searchTerms.some((term) =>
@@ -354,11 +355,13 @@ function track(...args: any[]) {
   }
 
   const queryParams = getQueryParams(trackingId, { type, event, debug });
-  const endpoint = window.minimalAnalytics?.analyticsEndpoint || analyticsEndpoint;
+  const endpoint = (isBrowser) ? window.minimalAnalytics?.analyticsEndpoint : undefined || analyticsEndpoint;
 
-  navigator.sendBeacon(`${endpoint}?${queryParams}`);
+  sendBeacon(`${endpoint}?${queryParams}`);
 
-  bindEvents(trackingId);
+  if (isBrowser) {
+    bindEvents(trackingId);
+  }
 
   trackCalled = true;
 }

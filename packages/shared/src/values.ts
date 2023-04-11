@@ -1,3 +1,4 @@
+import { getRootObject, MemoryStorage, NoopStorage, safeStorageFactory } from './storage';
 import { getRandomId } from './utility';
 
 /* -----------------------------------
@@ -21,14 +22,26 @@ const counterKey = 'sessionCount';
 
 /* -----------------------------------
  *
+ * Storage
+ *
+ * -------------------------------- */
+
+const LocalStorage = safeStorageFactory('localStorage', NoopStorage);
+const SessionStorage = safeStorageFactory('sessionStorage', MemoryStorage);
+
+/* -----------------------------------
+ *
  * Document
  *
  * -------------------------------- */
 
 function getDocument() {
-  const { hostname, origin, pathname, search } = document.location;
-  const title = document.title;
-  const referrer = document.referrer;
+  const root = getRootObject();
+  const location = root.document?.location || root.location;
+
+  const { hostname, origin, pathname, search } = location || { };
+  const title = root.document?.title;
+  const referrer = root.document?.referrer;
 
   return { location: origin + pathname + search, hostname, pathname, referrer, title };
 }
@@ -40,16 +53,15 @@ function getDocument() {
  * -------------------------------- */
 
 function getClientId(key = clientKey) {
-  const clientId = getRandomId();
-  const storedValue = localStorage.getItem(key);
-
-  if (!storedValue) {
-    localStorage.setItem(key, clientId);
-
-    return clientId;
+  const storedValue = LocalStorage.getItem(key);
+  if (storedValue) {
+    return storedValue;
   }
 
-  return storedValue;
+  const clientId = getRandomId();
+  LocalStorage.setItem(key, clientId);
+
+  return clientId;
 }
 
 /* -----------------------------------
@@ -59,16 +71,15 @@ function getClientId(key = clientKey) {
  * -------------------------------- */
 
 function getSessionId(key = sessionKey) {
-  const sessionId = getRandomId();
-  const storedValue = sessionStorage.getItem(key);
-
-  if (!storedValue) {
-    sessionStorage.setItem(key, sessionId);
-
-    return sessionId;
+  const storedValue = SessionStorage.getItem(key);
+  if (storedValue) {
+    return storedValue;
   }
 
-  return storedValue;
+  const sessionId = getRandomId();
+  SessionStorage.setItem(key, sessionId);
+
+  return sessionId;
 }
 
 /* -----------------------------------
@@ -79,13 +90,13 @@ function getSessionId(key = sessionKey) {
 
 function getSessionCount(key = counterKey) {
   let sessionCount = '1';
-  const storedValue = sessionStorage.getItem(key);
+  const storedValue = SessionStorage.getItem(key);
 
   if (storedValue) {
     sessionCount = `${+storedValue + 1}`;
   }
 
-  sessionStorage.setItem(key, sessionCount);
+  SessionStorage.setItem(key, sessionCount);
 
   return sessionCount;
 }
@@ -97,9 +108,9 @@ function getSessionCount(key = counterKey) {
  * -------------------------------- */
 
 function getSessionState(firstEvent: boolean) {
-  const firstVisit = !localStorage.getItem(clientKey) ? '1' : void 0;
-  const sessionStart = !sessionStorage.getItem(sessionKey) ? '1' : void 0;
-  let sessionCount = sessionStorage.getItem(counterKey) || '1';
+  const firstVisit = !SessionStorage.getItem(clientKey) ? '1' : void 0;
+  const sessionStart = !SessionStorage.getItem(sessionKey) ? '1' : void 0;
+  let sessionCount = SessionStorage.getItem(counterKey) || '1';
 
   if (firstEvent) {
     sessionCount = getSessionCount();
