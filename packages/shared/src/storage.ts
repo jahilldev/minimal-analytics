@@ -1,6 +1,6 @@
 type StorageClassName = 'localStorage' | 'sessionStorage';
 
-export function getRootObject(): Window | undefined {
+function getRootObject(): Window | undefined {
    if (typeof self === 'object') {
       return self;
    } else if (typeof window === 'object') {
@@ -8,7 +8,7 @@ export function getRootObject(): Window | undefined {
    }
 }
 
-function hasStorage(name: string): boolean {
+function hasStorage(name: StorageClassName): boolean {
    const root = getRootObject();
    return (root && typeof root[name] !== 'undefined');
 }
@@ -25,7 +25,7 @@ function isStorageClassSupported(storageInstance: Storage) {
    }
 }
 
-export class MemoryStorage implements Storage {
+class MemoryStorage implements Storage {
    #map: Map<string, string>;
 
    constructor() {
@@ -57,33 +57,7 @@ export class MemoryStorage implements Storage {
    }
 }
 
-export class NoopStorage implements Storage {
-   constructor() {
-   }
-
-   clear() {
-   }
-
-   key(index: number): string | null {
-      return null;
-   }
-
-   getItem(name: string): string | null {
-      return null;
-   }
-
-   setItem(name: string, value: string): void {
-   }
-
-   removeItem(name: string): void {
-   }
-
-   get length(): number {
-      return 0;
-   }
-}
-
-export function safeStorageFactory<T extends Storage>(storageClassName: StorageClassName, defaultStorageClass?: new () => T): Storage {
+function safeStorageFactory<T extends Storage>(storageClassName: StorageClassName, defaultStorageClass?: new () => T): Storage {
    const hasStorageClass = hasStorage(storageClassName);
    if (!hasStorageClass) {
       return new defaultStorageClass();
@@ -98,3 +72,11 @@ export function safeStorageFactory<T extends Storage>(storageClassName: StorageC
 
    return storageInstance;
 }
+
+export {
+   getRootObject,
+   MemoryStorage,
+   safeStorageFactory,
+   hasStorage,
+   isStorageClassSupported,
+};

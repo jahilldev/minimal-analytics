@@ -1,4 +1,4 @@
-import { getRootObject, MemoryStorage, NoopStorage, safeStorageFactory } from './storage';
+import { getRootObject, hasStorage, isStorageClassSupported, MemoryStorage, safeStorageFactory } from './storage';
 import { getRandomId } from './utility';
 
 /* -----------------------------------
@@ -26,7 +26,7 @@ const counterKey = 'sessionCount';
  *
  * -------------------------------- */
 
-const LocalStorage = safeStorageFactory('localStorage', NoopStorage);
+const LocalStorage = safeStorageFactory('localStorage', MemoryStorage);
 const SessionStorage = safeStorageFactory('sessionStorage', MemoryStorage);
 
 /* -----------------------------------
@@ -52,11 +52,27 @@ function getDocument() {
  *
  * -------------------------------- */
 
+let supportsLocalStorage = null;
+function maybeWarnStorage() {
+  if (typeof supportsLocalStorage !== 'boolean') {
+    const root = getRootObject();
+    const hasLocalStorage = hasStorage('localStorage');
+    const isLocalStorageSupported = isStorageClassSupported(root['localStorage']);
+    supportsLocalStorage = (hasLocalStorage && isLocalStorageSupported);
+  }
+
+  if (!supportsLocalStorage) {
+    console.warn('Minimal Analytics: localStorage not available, ClientID will not be persisted.');
+  }
+}
+
 function getClientId(key = clientKey) {
   const storedValue = LocalStorage.getItem(key);
   if (storedValue) {
     return storedValue;
   }
+
+  maybeWarnStorage();
 
   const clientId = getRandomId();
   LocalStorage.setItem(key, clientId);

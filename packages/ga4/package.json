@@ -47,6 +47,6 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@minimal-analytics/shared": "1.0.1"
+    "@minimal-analytics/shared": "1.0.0"
   }
 }

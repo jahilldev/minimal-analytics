@@ -1,4 +1,3 @@
-import { getRandomId } from '../src/utility';
 import { EventParams, getClientId, getDocument, getEventParams } from '../src/values';
 
 /* -----------------------------------
@@ -107,13 +106,34 @@ describe('shared -> values', () => {
     });
 
     describe('when localStorage is not available', () => {
+      let storageSpy;
+      let warnSpy;
+
+      // Required because of memoized local var supportsLocalStorage
+      jest.resetModules();
+      const getClientIdCopy = (require('../src/values') as typeof import('../src/values')).getClientId;
+
       beforeEach(() => {
+        warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
+        storageSpy = jest.spyOn(window, "localStorage", "get");
+        storageSpy.mockImplementation(() => undefined);
         getSpy.mockReturnValue(null);
       });
 
+
+      afterEach(() => {
+        storageSpy.mockRestore();
+      });
+
+      it('warns via a console statement', () => {
+        getClientIdCopy(testKey);
+
+        expect(warnSpy).toHaveBeenCalled();
+      });
+
       it('generates a new clientId', () => {
-        getClientId(testKey);
-        getClientId(testKey);
+        getClientIdCopy(testKey);
+        getClientIdCopy(testKey);
 
         expect(getSpy).toHaveBeenCalledTimes(2);
         expect(setSpy).toHaveBeenCalledTimes(2);

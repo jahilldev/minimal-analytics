@@ -1,6 +1,8 @@
-export function sendBeaconXHR(url: string, data: string | Blob) {
-   const event = this.event && this.event.type;
-   const sync = event === 'unload' || event === 'beforeunload';
+const syncEvents = new Set(['unload', 'beforeunload', 'pagehide']);
+
+function sendBeaconXHR(url: string | URL, data?: XMLHttpRequestBodyInit | null): boolean {
+   const eventType = this?.event?.type;
+   const sync = syncEvents.has((eventType || '').toLowerCase());
 
    const xhr = new XMLHttpRequest();
    xhr.open('POST', url, !sync);
@@ -24,10 +26,16 @@ export function sendBeaconXHR(url: string, data: string | Blob) {
    return true;
 }
 
-export function sendBeacon(url: string, data: string | Blob) {
-   if (typeof navigator !== 'undefined' && 'sendBeacon' in navigator) {
+function sendBeacon(url: string | URL, data?: XMLHttpRequestBodyInit | null): boolean {
+   const hasBeaconApi = (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function');
+   if (hasBeaconApi) {
       return navigator.sendBeacon(url, data);
    }
 
    return sendBeaconXHR(url, data);
 }
+
+export {
+   sendBeaconXHR,
+   sendBeacon,
+};
