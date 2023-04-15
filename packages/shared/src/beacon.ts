@@ -29,10 +29,16 @@ function sendBeaconXHR(url: string | URL, data?: XMLHttpRequestBodyInit | null):
 function sendBeacon(url: string | URL, data?: XMLHttpRequestBodyInit | null): boolean {
    const hasBeaconApi = (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function');
    if (hasBeaconApi) {
-      return navigator.sendBeacon(url, data);
+      if (data) {
+         return navigator.sendBeacon(url, data);
+      }
+      return navigator.sendBeacon(url);
    }
 
-   return sendBeaconXHR(url, data);
+   if (data) {
+      return sendBeaconXHR(url, data);
+   }
+   return sendBeaconXHR(url);
 }
 
 export {

@@ -83,7 +83,7 @@ describe('shared -> beacon', () => {
       beacon.sendBeacon(analyticsEndpoint);
 
       expect(sendBeaconMock)
-        .toBeCalledWith(analyticsEndpoint, undefined);
+        .toBeCalledWith(analyticsEndpoint);
     });
 
     describe('if navigator is not available', () => {
