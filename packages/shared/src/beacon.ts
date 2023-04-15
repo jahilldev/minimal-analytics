@@ -26,7 +26,24 @@ function sendBeaconXHR(url: string | URL, data?: XMLHttpRequestBodyInit | null):
    return true;
 }
 
+function sendBeaconFetch(url: string | URL, data?: XMLHttpRequestBodyInit | null): boolean {
+   try {
+      fetch(url, {
+         method: 'POST',
+         body: data,
+         credentials: 'include',
+         mode: 'cors',
+         keepalive: true, // Not present on Firefox
+      })
+      .catch(() => { }); // Avoid unhandledrejection
+      return true;
+   } catch (e) {
+      return false;
+   }
+}
+
 function sendBeacon(url: string | URL, data?: XMLHttpRequestBodyInit | null): boolean {
+   // #1: navigator.sendBeacon (window Scope)
    const hasBeaconApi = (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function');
    if (hasBeaconApi) {
       if (data) {
@@ -35,13 +52,30 @@ function sendBeacon(url: string | URL, data?: XMLHttpRequestBodyInit | null): bo
       return navigator.sendBeacon(url);
    }
 
-   if (data) {
-      return sendBeaconXHR(url, data);
+   // #2: XMLHttpRequest (Worker Scope, except ServiceWorker)
+   // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest#sect1
+   const hasXHR = (typeof XMLHttpRequest !== 'undefined');
+   if (hasXHR) {
+      if (data) {
+         return sendBeaconXHR(url, data);
+      }
+      return sendBeaconXHR(url);
    }
-   return sendBeaconXHR(url);
+
+   // #3: fetch (ServiceWorker Scope)
+   const hasFetch = (typeof fetch !== 'undefined');
+   if (hasFetch) {
+      if (data) {
+         return sendBeaconFetch(url, data);
+      }
+      return sendBeaconFetch(url);
+   }
+
+   return false;
 }
 
 export {
    sendBeaconXHR,
+   sendBeaconFetch,
    sendBeacon,
 };

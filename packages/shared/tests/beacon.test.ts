@@ -24,9 +24,18 @@ const xhrMock: Partial<XMLHttpRequest> = {
 };
 
 describe('shared -> beacon', () => {
+  const originalFetch = global.fetch;
+  const fetchMock = jest.fn();
+
   beforeEach(() => {
     jest.spyOn(window, 'XMLHttpRequest')
       .mockImplementation(() => xhrMock as XMLHttpRequest);
+    global.fetch = fetchMock;
+    fetchMock.mockImplementation(() => Promise.resolve(''));
+  });
+
+  afterEach(() => {
+    global.fetch = originalFetch;
   });
 
   describe('sendBeaconXHR', () => {
@@ -64,6 +73,33 @@ describe('shared -> beacon', () => {
     });
   });
 
+  describe('sendBeaconFetch', () => {
+    it('makes a POST request using fetch', () => {
+      beacon.sendBeaconFetch(analyticsEndpoint);
+
+      expect(fetch)
+        .toBeCalledWith(analyticsEndpoint, expect.objectContaining({
+          method: 'POST',
+        }));
+    });
+
+    it('returns true if no error is thrown', () => {
+      const response = beacon.sendBeaconFetch(analyticsEndpoint);
+
+      expect(response).toBe(true);
+    });
+
+    it('returns false if an error is thrown', () => {
+      fetchMock.mockImplementation(() => { throw new TypeError('Invalid header name.'); });
+
+      expect(() => {
+        const response = beacon.sendBeaconFetch(analyticsEndpoint);
+
+        expect(response).toBe(false);
+      }).not.toThrow(Error);
+    });
+  });
+
   describe('sendBeacon', () => {
     const originalSendBeacon = navigator.sendBeacon;
     const sendBeaconMock = jest.fn();
@@ -82,7 +118,7 @@ describe('shared -> beacon', () => {
     it('uses navigator.sendBeacon if available', () => {
       beacon.sendBeacon(analyticsEndpoint);
 
-      expect(sendBeaconMock)
+      expect(navigator.sendBeacon)
         .toBeCalledWith(analyticsEndpoint);
     });
 
@@ -115,6 +151,25 @@ describe('shared -> beacon', () => {
 
       expect(xhrMock.open)
         .toBeCalledWith('POST', analyticsEndpoint, expect.anything());
+      expect(sendBeaconMock)
+        .not.toBeCalled();
+    });
+
+    it('uses fetch if XMLHttpRequest is not available', () => {
+      Object.assign(navigator, {
+        sendBeacon: undefined,
+      });
+
+      Object.assign(window, {
+        XMLHttpRequest: undefined,
+      });
+
+      beacon.sendBeacon(analyticsEndpoint);
+
+      expect(fetch)
+        .toBeCalledWith(analyticsEndpoint, expect.objectContaining({
+          method: 'POST',
+        }));
       expect(sendBeaconMock)
         .not.toBeCalled();
     });
