@@ -9,6 +9,7 @@ import {
   isTargetElement,
   getUrlData,
   getEventParams,
+  getRootObject,
 } from '@minimal-analytics/shared';
 import type { EventParams } from '@minimal-analytics/shared';
 import { sendBeacon } from '@minimal-analytics/shared';
@@ -32,6 +33,8 @@ declare global {
   }
 }
 
+const root = getRootObject();
+
 /* -----------------------------------
  *
  * IProps
@@ -51,8 +54,8 @@ interface IProps {
  * -------------------------------- */
 
 const isBrowser = typeof window !== 'undefined';
-const defineGlobal = isBrowser && window.minimalAnalytics?.defineGlobal;
-const autoTrack = isBrowser && window.minimalAnalytics?.autoTrack;
+const defineGlobal = isBrowser && root?.minimalAnalytics?.defineGlobal;
+const autoTrack = isBrowser && root?.minimalAnalytics?.autoTrack;
 const analyticsEndpoint = 'https://www.google-analytics.com/g/collect';
 const searchTerms = ['q', 's', 'search', 'query', 'keyword'];
 const clickTargets = 'a, button, input[type=submit], input[type=button]';
@@ -84,7 +87,7 @@ const eventKeys = {
  * -------------------------------- */
 
 function getArguments(args: any[]): [string | undefined, IProps] {
-  const globalId = (isBrowser) ? window.minimalAnalytics?.trackingId : undefined;
+  const globalId = root?.minimalAnalytics?.trackingId;
   const trackingId = typeof args[0] === 'string' ? args[0] : globalId;
   const props = typeof args[0] === 'object' ? args[0] : args[1] || {};
 
@@ -328,13 +331,13 @@ function bindEvents(trackingId: string) {
   scrollHandler = onScrollEvent.bind(null, trackingId);
   unloadHandler = onUnloadEvent.bind(null, trackingId);
 
-  document.addEventListener('visibilitychange', onVisibilityChange);
-  document.addEventListener('scroll', scrollHandler);
-  document.addEventListener('click', clickHandler);
+  root?.document?.addEventListener('visibilitychange', onVisibilityChange);
+  root?.document?.addEventListener('scroll', scrollHandler);
+  root?.document?.addEventListener('click', clickHandler);
 
-  window.addEventListener('blur', onBlurEvent);
-  window.addEventListener('focus', onFocusEvent);
-  window.addEventListener('beforeunload', unloadHandler);
+  root?.addEventListener('blur', onBlurEvent);
+  root?.addEventListener('focus', onFocusEvent);
+  root?.addEventListener('beforeunload', unloadHandler);
 }
 
 /* -----------------------------------
@@ -355,7 +358,7 @@ function track(...args: any[]) {
   }
 
   const queryParams = getQueryParams(trackingId, { type, event, debug });
-  const endpoint = (isBrowser) ? window.minimalAnalytics?.analyticsEndpoint : undefined || analyticsEndpoint;
+  const endpoint = root?.minimalAnalytics?.analyticsEndpoint || analyticsEndpoint;
 
   sendBeacon(`${endpoint}?${queryParams}`);
 
@@ -372,8 +375,8 @@ function track(...args: any[]) {
  *
  * -------------------------------- */
 
-if (defineGlobal) {
-  window.track = track;
+if (defineGlobal && root) {
+  root.track = track;
 }
 
 /* -----------------------------------
