@@ -8,9 +8,6 @@ import { safeStorageFactory, MemoryStorage, hasStorage } from '../src/storage';
  * -------------------------------- */
 
 describe('storage', () => {
-   beforeEach(() => {
-   });
-
    describe('safeStorageFactory', () => {
       it('uses sessionStorage when available', () => {
          const safeSessionStorage = safeStorageFactory('sessionStorage', MemoryStorage);

@@ -1,4 +1,4 @@
-import { EventParams, getClientId, getDocument, getEventParams } from '../src/values';
+import { EventParams, getClientId, getDocument, getEventParams, getSessionState, getSessionId, sessionKey  } from '../src/values';
 
 /* -----------------------------------
  *
@@ -162,6 +162,54 @@ describe('shared -> values', () => {
       const result = getEventParams(event);
 
       expect(result).toEqual(event.map((items) => items.map((item) => item?.toString())));
+    });
+  });
+
+  describe('getSessionState', () => {
+    beforeEach(() => {
+      sessionStorage.clear();
+    });
+
+    it('correctly sets firstVisit, sessionStart, and sessionCount', () => {
+      let state = getSessionState(true);
+
+      expect(state.firstVisit).toEqual('1');
+      expect(state.sessionStart).toEqual('1');
+      expect(state.sessionCount).toEqual('1');
+
+      state = getSessionState(false);
+      getSessionId();
+
+      expect(state.firstVisit).toBeUndefined;
+      expect(state.sessionStart).toBeUndefined;
+      expect(state.sessionCount).toEqual('1');
+    });
+  });
+
+  describe('getSessionId', () => {
+    let getSpy;
+    let setSpy;
+
+    beforeEach(() => {
+      sessionStorage.clear();
+      getSpy = jest.spyOn(Storage.prototype, 'getItem');
+      setSpy = jest.spyOn(Storage.prototype, 'setItem');
+    });
+
+    afterEach(() => {
+      getSpy.mockClear();
+      setSpy.mockClear();
+    });
+
+    it('returns the same id after multiple calls', () => {
+      const id1 = getSessionId();
+      const id2 = getSessionId();
+
+      expect(id1).toEqual(testClientId);
+      expect(id1).toEqual(id2);
+
+      expect(getSpy).toBeCalledWith(sessionKey);
+      expect(setSpy).toBeCalledWith(sessionKey,testClientId );
     });
   });
 });
