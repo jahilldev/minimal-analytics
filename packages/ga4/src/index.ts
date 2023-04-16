@@ -82,6 +82,20 @@ const eventKeys = {
 
 /* -----------------------------------
  *
+ * Merge
+ *
+ * -------------------------------- */
+
+function merge<T>(eventParamsA: [T, T][], eventParamsB: [T, T][]) {
+  const paramMapA = new Map(eventParamsA);
+  const paramMapB = new Map(eventParamsB);
+  const mergedEventParams = new Map([...paramMapA, ...paramMapB]);
+
+  return Array.from(mergedEventParams.entries());
+}
+
+/* -----------------------------------
+ *
  * Arguments
  *
  * -------------------------------- */
@@ -100,8 +114,8 @@ function getArguments(args: any[]): [string | undefined, IProps] {
  *
  * -------------------------------- */
 
-function getEventMeta({ type = '', event }: Pick<IProps, 'type' | 'event'>) {
-  const searchString = (isBrowser) ? document.location.search : self.location.search;
+function getEventMeta({ type = '', event }: Pick<IProps, 'type' | 'event'>): [string, string][] {
+  const searchString = root?.document?.location?.search || root?.location?.search || '';
   const searchParams = new URLSearchParams(searchString);
 
   const searchResults = searchTerms.some((term) =>
@@ -117,10 +131,10 @@ function getEventMeta({ type = '', event }: Pick<IProps, 'type' | 'event'>) {
   ];
 
   if (event) {
-    eventParams = eventParams.concat(getEventParams(event));
+    eventParams = merge(eventParams as [string, string][], getEventParams(event) as [string, string][]);
   }
 
-  return eventParams;
+  return eventParams as [string, string][];
 }
 
 /* -----------------------------------
@@ -153,7 +167,7 @@ function getQueryParams(trackingId: string, { type, event, debug }: IProps) {
     [param.screenResolution, `${screen.width}x${screen.height}`],
   ];
 
-  params = params.concat(getEventMeta({ type, event }));
+  params = merge(params as [string, string][], getEventMeta({ type, event }));
   params = params.filter(([, value]) => value);
 
   return new URLSearchParams(params);
@@ -262,7 +276,7 @@ function onFocusEvent() {
 function onVisibilityChange() {
   const timeIndex = engagementTimes.length - 1;
   const [, isHidden] = engagementTimes[timeIndex];
-  const stateIndex = ['hidden', 'visible'].indexOf(document.visibilityState);
+  const stateIndex = ['hidden', 'visible'].indexOf(root?.document?.visibilityState || '');
   const isVisible = Boolean(stateIndex);
 
   if (stateIndex === -1) {
@@ -298,7 +312,7 @@ const onScrollEvent = debounce((trackingId: string) => {
     event: eventParams,
   });
 
-  document.removeEventListener('scroll', scrollHandler);
+  root?.document?.removeEventListener('scroll', scrollHandler);
 });
 
 /* -----------------------------------

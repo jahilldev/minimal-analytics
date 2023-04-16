@@ -296,6 +296,26 @@ describe('ga4 -> track()', () => {
     );
   });
 
+  it('overrides existing params when set by user', () => {
+    const testClientId = '123456789';
+    const params = [
+      `${param.eventParam}.${param.clientId}=${testClientId}`,
+    ];
+
+    track(trackingId, {
+      type: testEvent,
+      event: {
+        [`${param.eventParam}.${param.clientId}`]: testClientId,
+      },
+    });
+
+    expect(navigator.sendBeacon).toBeCalledTimes(1);
+
+    params.forEach((param) =>
+      expect(navigator.sendBeacon).toBeCalledWith(expect.stringContaining(param))
+    );
+  });
+
   it('uses the supplied analytics endpoint if defined on the window', () => {
     const testEndpoint = `${testUrl}/collect/${Math.random()}`;
 
