@@ -170,7 +170,7 @@ describe('shared -> values', () => {
       sessionStorage.clear();
     });
 
-    it('correctly sets firstVisit, sessionStart, and sessionCount', () => {
+    it('correctly sets firstVisit, sessionStart, and sessionCount after multiple calls', () => {
       let state = getSessionState(true);
 
       expect(state.firstVisit).toEqual('1');
@@ -183,6 +183,24 @@ describe('shared -> values', () => {
       expect(state.firstVisit).toBeUndefined;
       expect(state.sessionStart).toBeUndefined;
       expect(state.sessionCount).toEqual('1');
+    });
+
+    it('correctly sets firstVisit after clientId is set', () => {
+      let state = getSessionState(true);
+
+      expect(state.firstVisit).toEqual('1');
+
+      getClientId();
+
+      state = getSessionState(true);
+
+      expect(state.firstVisit).toBeUndefined;
+    });
+
+    it('correctly sets firstVisit after clientId is set directly', () => {
+      localStorage.setItem('clientId', testClientId);
+      const state = getSessionState(true);
+      expect(state.firstVisit).toBeUndefined
     });
   });
 

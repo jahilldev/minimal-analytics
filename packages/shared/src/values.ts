@@ -124,7 +124,7 @@ function getSessionCount(key = counterKey) {
  * -------------------------------- */
 
 function getSessionState(firstEvent: boolean) {
-  const firstVisit = !SessionStorage.getItem(clientKey) ? '1' : void 0;
+  const firstVisit = !LocalStorage.getItem(clientKey) ? '1' : void 0;
   const sessionStart = !SessionStorage.getItem(sessionKey) ? '1' : void 0;
   let sessionCount = SessionStorage.getItem(counterKey) || '1';
 
