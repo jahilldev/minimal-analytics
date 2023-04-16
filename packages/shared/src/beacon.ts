@@ -1,3 +1,9 @@
+/* -----------------------------------
+ *
+ * sendBeacon with XMLHttpRequest
+ *
+ * -------------------------------- */
+
 const syncEvents = new Set(['unload', 'beforeunload', 'pagehide']);
 
 function sendBeaconXHR(url: string | URL, data?: XMLHttpRequestBodyInit | null): boolean {
@@ -26,6 +32,12 @@ function sendBeaconXHR(url: string | URL, data?: XMLHttpRequestBodyInit | null):
    return true;
 }
 
+/* -----------------------------------
+ *
+ * sendBeacon with Fetch
+ *
+ * -------------------------------- */
+
 function sendBeaconFetch(url: string | URL, data?: XMLHttpRequestBodyInit | null): boolean {
    try {
       fetch(url, {
@@ -41,6 +53,12 @@ function sendBeaconFetch(url: string | URL, data?: XMLHttpRequestBodyInit | null
       return false;
    }
 }
+
+/* -----------------------------------
+ *
+ * sendBeacon
+ *
+ * -------------------------------- */
 
 function sendBeacon(url: string | URL, data?: XMLHttpRequestBodyInit | null): boolean {
    // #1: navigator.sendBeacon (window Scope)
@@ -73,6 +91,12 @@ function sendBeacon(url: string | URL, data?: XMLHttpRequestBodyInit | null): bo
 
    return false;
 }
+
+/* -----------------------------------
+ *
+ * Exports
+ *
+ * -------------------------------- */
 
 export {
    sendBeaconXHR,

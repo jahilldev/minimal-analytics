@@ -1,4 +1,11 @@
+/* -----------------------------------
+ *
+ * Helpers
+ *
+ * -------------------------------- */
+
 type StorageClassName = 'localStorage' | 'sessionStorage';
+
 
 function getRootObject(): Window | undefined {
    if (typeof self === 'object') {
@@ -24,6 +31,12 @@ function isStorageClassSupported(storageInstance: Storage) {
      return false; // i.e. QUOTA_EXCEEDED_ERR
    }
 }
+
+/* -----------------------------------
+ *
+ * MemoryStorage
+ *
+ * -------------------------------- */
 
 class MemoryStorage implements Storage {
    #map: Map<string, string>;
@@ -57,6 +70,12 @@ class MemoryStorage implements Storage {
    }
 }
 
+/* -----------------------------------
+ *
+ * Factory
+ *
+ * -------------------------------- */
+
 function safeStorageFactory<T extends Storage>(storageClassName: StorageClassName, defaultStorageClass?: new () => T): Storage {
    const hasStorageClass = hasStorage(storageClassName);
    if (!hasStorageClass) {
@@ -72,6 +91,12 @@ function safeStorageFactory<T extends Storage>(storageClassName: StorageClassNam
 
    return storageInstance;
 }
+
+/* -----------------------------------
+ *
+ * Exports
+ *
+ * -------------------------------- */
 
 export {
    getRootObject,
