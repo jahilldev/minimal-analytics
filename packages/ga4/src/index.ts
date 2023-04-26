@@ -10,6 +10,8 @@ import {
   getUrlData,
   getEventParams,
   getRootObject,
+  mergeEventParams,
+  EventParamArray,
 } from '@minimal-analytics/shared';
 import type { EventParams } from '@minimal-analytics/shared';
 import { sendBeacon } from '@minimal-analytics/shared';
@@ -82,20 +84,6 @@ const eventKeys = {
 
 /* -----------------------------------
  *
- * Merge
- *
- * -------------------------------- */
-
-function merge<T>(eventParamsA: [T, T][], eventParamsB: [T, T][]) {
-  const paramMapA = new Map(eventParamsA);
-  const paramMapB = new Map(eventParamsB);
-  const mergedEventParams = new Map([...paramMapA, ...paramMapB]);
-
-  return Array.from(mergedEventParams.entries());
-}
-
-/* -----------------------------------
- *
  * Arguments
  *
  * -------------------------------- */
@@ -114,7 +102,7 @@ function getArguments(args: any[]): [string | undefined, IProps] {
  *
  * -------------------------------- */
 
-function getEventMeta({ type = '', event }: Pick<IProps, 'type' | 'event'>): [string, string][] {
+function getEventMeta({ type = '', event }: Pick<IProps, 'type' | 'event'>): EventParamArray {
   const searchString = root?.document?.location?.search || root?.location?.search || '';
   const searchParams = new URLSearchParams(searchString);
 
@@ -125,16 +113,16 @@ function getEventMeta({ type = '', event }: Pick<IProps, 'type' | 'event'>): [st
   const eventName = searchResults ? eventKeys.viewSearchResults : type;
   const searchTerm = searchTerms.find((term) => searchParams.get(term));
 
-  let eventParams = [
+  let eventParams: EventParamArray = [
     [param.eventName, eventName],
     [`${param.eventParam}.search_term`, searchTerm || ''],
   ];
 
   if (event) {
-    eventParams = merge(eventParams as [string, string][], getEventParams(event) as [string, string][]);
+    eventParams = mergeEventParams(eventParams, getEventParams(event));
   }
 
-  return eventParams as [string, string][];
+  return eventParams;
 }
 
 /* -----------------------------------
@@ -148,7 +136,7 @@ function getQueryParams(trackingId: string, { type, event, debug }: IProps) {
   const { firstVisit, sessionStart, sessionCount } = getSessionState(!trackCalled);
   const screen = self.screen || ({} as Screen);
 
-  let params = [
+  let params: EventParamArray = [
     [param.protocolVersion, '2'],
     [param.trackingId, trackingId],
     [param.pageId, getRandomId()],
@@ -167,7 +155,7 @@ function getQueryParams(trackingId: string, { type, event, debug }: IProps) {
     [param.screenResolution, `${screen.width}x${screen.height}`],
   ];
 
-  params = merge(params as [string, string][], getEventMeta({ type, event }));
+  params = mergeEventParams(params, getEventMeta({ type, event }));
   params = params.filter(([, value]) => value);
 
   return new URLSearchParams(params);

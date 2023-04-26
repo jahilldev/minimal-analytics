@@ -1,4 +1,3 @@
-import { clientKey, counterKey, getClientId, getSessionState, sessionKey } from '@minimal-analytics/shared';
 import { track } from '../src/index';
 import { param } from '../src/model';
 
@@ -469,5 +468,46 @@ describe('ga4 -> track()', () => {
     await sleep();
 
     expect(navigator.sendBeacon).toBeCalledTimes(2);
+  });
+
+  describe('global variables', () => {
+    beforeEach(() => {
+      jest.resetModules();
+      jest.restoreAllMocks();
+    });
+
+    it('does not trigger a tracking event when autoTrack is disabled', async () => {
+      window['minimalAnalytics'] = {
+        autoTrack: false,
+        trackingId: trackingId,
+      };
+      await import('../src/index');
+      expect(navigator.sendBeacon).not.toHaveBeenCalled();
+    });
+
+    it('triggers a tracking event when autoTrack is enabled', async () => {
+      window['minimalAnalytics'] = {
+        autoTrack: true,
+        trackingId: trackingId,
+      };
+      await import('../src/index');
+      expect(navigator.sendBeacon).toHaveBeenCalled();
+    });
+
+    it('does not define a global function when defineGlobal is disabled', async () => {
+      window['minimalAnalytics'] = {
+        defineGlobal: false,
+      };
+      await import('../src/index');
+      expect(typeof window['track']).toBe('undefined');
+    });
+
+    it('defines a global function when defineGlobal is enabled', async () => {
+      window['minimalAnalytics'] = {
+        defineGlobal: true,
+      };
+      await import('../src/index');
+      expect(typeof window['track']).toBe('function');
+    });
   });
 });

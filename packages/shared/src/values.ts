@@ -9,6 +9,7 @@ import { getRandomId } from './utility';
 
 type ParamValue = string | number | undefined | null;
 type EventParams = Record<string, ParamValue> | [string, ParamValue][];
+type EventParamArray = [string, string][];
 
 /* -----------------------------------
  *
@@ -137,13 +138,13 @@ function getSessionState(firstEvent: boolean) {
 
 /* -----------------------------------
  *
- * EventPrams
+ * EventParams
  *
  * -------------------------------- */
 
-function getEventParams(event: EventParams) {
+function getEventParams(event: EventParams): EventParamArray {
   if (Array.isArray(event)) {
-    return event.map((items) => items.map((item) => item?.toString()));
+    return event.map((items) => ([ items[0]?.toString(), items[1]?.toString() ]));
   }
 
   return Object.keys(event).map((key) => [key, `${event[key]}`]);
@@ -157,6 +158,7 @@ function getEventParams(event: EventParams) {
 
 export {
   EventParams,
+  EventParamArray,
   clientKey,
   sessionKey,
   counterKey,

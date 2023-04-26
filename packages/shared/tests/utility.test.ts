@@ -1,4 +1,5 @@
-import { getRandomId, getHashId, isTargetElement, getUrlData } from '../src/utility';
+import { getRandomId, getHashId, isTargetElement, getUrlData, mergeEventParams, getScrollPercentage } from '../src/utility';
+import { EventParamArray } from '../src/values';
 
 /* -----------------------------------
  *
@@ -132,6 +133,56 @@ describe('shared -> utility', () => {
       const result = getUrlData(hashSeed);
 
       expect(result).toEqual({ isExternal: false });
+    });
+  });
+
+  describe('getScrollPercentage', () => {
+    beforeEach(() => {
+      Object.defineProperty(document, 'documentElement', {
+        value: {
+          scrollHeight: 12544,
+          offsetHeight: 749,
+          clientHeight: 749,
+        },
+        writable: true,
+      });
+
+      window.pageYOffset = 0;
+      window.innerHeight = 750;
+    });
+
+    it('returns zero when the page is not scrolled', () => {
+      const scrollPercent = getScrollPercentage();
+
+      expect(scrollPercent).toEqual(0);
+    });
+
+    it('returns the scroll percentage', () => {
+      window.pageYOffset = 2354.61669921875;
+
+      const scrollPercent = getScrollPercentage();
+      const calculatedPercentage = Math.round((2354 / 12544) * 100); // 19
+
+      expect(scrollPercent).toEqual(calculatedPercentage);
+    });
+  });
+
+  describe('mergeEventParams', () => {
+    it('merges two arrays in order', () => {
+      const paramsA: EventParamArray = [['foo', 'bar']];
+      const paramsB: EventParamArray = [['bar', 'baz']];
+      const mergedParams = mergeEventParams(paramsA, paramsB);
+      expect(mergedParams).toEqual([
+        ...paramsA,
+        ...paramsB,
+      ]);
+    });
+
+    it('resolves duplicates with the latest value', () => {
+      const paramsA: EventParamArray = [['foo', 'bar']];
+      const paramsB: EventParamArray = [['foo', 'baz']];
+      const mergedParams = mergeEventParams(paramsA, paramsB);
+      expect(mergedParams).toEqual(paramsB);
     });
   });
 });
