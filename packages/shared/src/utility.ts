@@ -4,6 +4,8 @@
  *
  * -------------------------------- */
 
+import { EventParamArray, EventParams } from "./values";
+
 function debounce(callback: TimerHandler, frequency = 300, timer = 0) {
   return (...args) => (
     clearTimeout(timer), (timer = setTimeout(callback, frequency, ...args))
@@ -113,6 +115,20 @@ function getUrlData(urlValue?: string) {
 
 /* -----------------------------------
  *
+ * Merge
+ *
+ * -------------------------------- */
+
+function mergeEventParams(eventParamsA: EventParamArray, eventParamsB: EventParamArray) {
+  const paramMapA = new Map(eventParamsA);
+  const paramMapB = new Map(eventParamsB);
+  const mergedEventParams = new Map([...paramMapA, ...paramMapB]);
+
+  return Array.from(mergedEventParams.entries());
+}
+
+/* -----------------------------------
+ *
  * Export
  *
  * -------------------------------- */
@@ -124,4 +140,5 @@ export {
   getScrollPercentage,
   isTargetElement,
   getUrlData,
+  mergeEventParams,
 };

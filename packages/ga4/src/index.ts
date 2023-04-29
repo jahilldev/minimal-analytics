@@ -9,8 +9,11 @@ import {
   isTargetElement,
   getUrlData,
   getEventParams,
+  mergeEventParams,
+  EventParamArray,
 } from '@minimal-analytics/shared';
 import type { EventParams } from '@minimal-analytics/shared';
+import { sendBeacon } from '@minimal-analytics/shared';
 import { param, files } from './model';
 
 /* -----------------------------------
@@ -50,8 +53,8 @@ interface IProps {
  * -------------------------------- */
 
 const isBrowser = typeof window !== 'undefined';
-const defineGlobal = isBrowser && window.minimalAnalytics?.defineGlobal;
-const autoTrack = isBrowser && window.minimalAnalytics?.autoTrack;
+const defineGlobal = isBrowser && globalThis.minimalAnalytics?.defineGlobal;
+const autoTrack = isBrowser && globalThis.minimalAnalytics?.autoTrack;
 const analyticsEndpoint = 'https://www.google-analytics.com/g/collect';
 const searchTerms = ['q', 's', 'search', 'query', 'keyword'];
 const clickTargets = 'a, button, input[type=submit], input[type=button]';
@@ -83,7 +86,7 @@ const eventKeys = {
  * -------------------------------- */
 
 function getArguments(args: any[]): [string | undefined, IProps] {
-  const globalId = window.minimalAnalytics?.trackingId;
+  const globalId = globalThis.minimalAnalytics?.trackingId;
   const trackingId = typeof args[0] === 'string' ? args[0] : globalId;
   const props = typeof args[0] === 'object' ? args[0] : args[1] || {};
 
@@ -96,8 +99,8 @@ function getArguments(args: any[]): [string | undefined, IProps] {
  *
  * -------------------------------- */
 
-function getEventMeta({ type = '', event }: Pick<IProps, 'type' | 'event'>) {
-  const searchString = document.location.search;
+function getEventMeta({ type = '', event }: Pick<IProps, 'type' | 'event'>): EventParamArray {
+  const searchString = globalThis.document?.location?.search || globalThis.location?.search || '';
   const searchParams = new URLSearchParams(searchString);
 
   const searchResults = searchTerms.some((term) =>
@@ -107,13 +110,13 @@ function getEventMeta({ type = '', event }: Pick<IProps, 'type' | 'event'>) {
   const eventName = searchResults ? eventKeys.viewSearchResults : type;
   const searchTerm = searchTerms.find((term) => searchParams.get(term));
 
-  let eventParams = [
+  let eventParams: EventParamArray = [
     [param.eventName, eventName],
     [`${param.eventParam}.search_term`, searchTerm || ''],
   ];
 
   if (event) {
-    eventParams = eventParams.concat(getEventParams(event));
+    eventParams = mergeEventParams(eventParams, getEventParams(event));
   }
 
   return eventParams;
@@ -130,7 +133,7 @@ function getQueryParams(trackingId: string, { type, event, debug }: IProps) {
   const { firstVisit, sessionStart, sessionCount } = getSessionState(!trackCalled);
   const screen = self.screen || ({} as Screen);
 
-  let params = [
+  let params: EventParamArray = [
     [param.protocolVersion, '2'],
     [param.trackingId, trackingId],
     [param.pageId, getRandomId()],
@@ -149,7 +152,7 @@ function getQueryParams(trackingId: string, { type, event, debug }: IProps) {
     [param.screenResolution, `${screen.width}x${screen.height}`],
   ];
 
-  params = params.concat(getEventMeta({ type, event }));
+  params = mergeEventParams(params, getEventMeta({ type, event }));
   params = params.filter(([, value]) => value);
 
   return new URLSearchParams(params);
@@ -258,7 +261,7 @@ function onFocusEvent() {
 function onVisibilityChange() {
   const timeIndex = engagementTimes.length - 1;
   const [, isHidden] = engagementTimes[timeIndex];
-  const stateIndex = ['hidden', 'visible'].indexOf(document.visibilityState);
+  const stateIndex = ['hidden', 'visible'].indexOf(globalThis.document?.visibilityState || '');
   const isVisible = Boolean(stateIndex);
 
   if (stateIndex === -1) {
@@ -294,7 +297,7 @@ const onScrollEvent = debounce((trackingId: string) => {
     event: eventParams,
   });
 
-  document.removeEventListener('scroll', scrollHandler);
+  globalThis.document?.removeEventListener('scroll', scrollHandler);
 });
 
 /* -----------------------------------
@@ -327,13 +330,13 @@ function bindEvents(trackingId: string) {
   scrollHandler = onScrollEvent.bind(null, trackingId);
   unloadHandler = onUnloadEvent.bind(null, trackingId);
 
-  document.addEventListener('visibilitychange', onVisibilityChange);
-  document.addEventListener('scroll', scrollHandler);
-  document.addEventListener('click', clickHandler);
+  globalThis.document?.addEventListener('visibilitychange', onVisibilityChange);
+  globalThis.document?.addEventListener('scroll', scrollHandler);
+  globalThis.document?.addEventListener('click', clickHandler);
 
-  window.addEventListener('blur', onBlurEvent);
-  window.addEventListener('focus', onFocusEvent);
-  window.addEventListener('beforeunload', unloadHandler);
+  globalThis.addEventListener('blur', onBlurEvent);
+  globalThis.addEventListener('focus', onFocusEvent);
+  globalThis.addEventListener('beforeunload', unloadHandler);
 }
 
 /* -----------------------------------
@@ -354,11 +357,13 @@ function track(...args: any[]) {
   }
 
   const queryParams = getQueryParams(trackingId, { type, event, debug });
-  const endpoint = window.minimalAnalytics?.analyticsEndpoint || analyticsEndpoint;
+  const endpoint = globalThis.minimalAnalytics?.analyticsEndpoint || analyticsEndpoint;
 
-  navigator.sendBeacon(`${endpoint}?${queryParams}`);
+  sendBeacon(`${endpoint}?${queryParams}`);
 
-  bindEvents(trackingId);
+  if (isBrowser) {
+    bindEvents(trackingId);
+  }
 
   trackCalled = true;
 }
@@ -369,8 +374,8 @@ function track(...args: any[]) {
  *
  * -------------------------------- */
 
-if (defineGlobal) {
-  window.track = track;
+if (defineGlobal && globalThis) {
+  globalThis.track = track;
 }
 
 /* -----------------------------------

@@ -1,4 +1,4 @@
-import { EventParams, getClientId, getDocument, getEventParams } from '../src/values';
+import { EventParams, getClientId, getDocument, getEventParams, getSessionState, getSessionId, sessionKey  } from '../src/values';
 
 /* -----------------------------------
  *
@@ -14,8 +14,6 @@ const testQuery1 = 'testQuery1';
 const testQuery2 = 'testQuery2';
 const testStringValue = `testValue-${Math.random()}`;
 const testNumberValue = Math.random();
-const localUrl = 'http://localhost/test';
-const remoteUrl = 'https://www.google.com/test';
 
 /* -----------------------------------
  *
@@ -46,6 +44,31 @@ describe('shared -> values', () => {
         location: `http://${testHost}/`,
         pathname: '/',
         referrer: '',
+      });
+    });
+
+    describe('when document is not available', () => {
+      let documentSpy;
+
+      beforeEach(() => {
+        documentSpy = jest.spyOn(window, "document", "get");
+        documentSpy.mockImplementation(() => undefined);
+      });
+
+      afterEach(() => {
+        documentSpy.mockClear();
+      });
+
+      it('returns when document is not available', () => {
+
+        const result = getDocument();
+        expect(result).toEqual({
+          hostname: testHost,
+          title: undefined,
+          location: `http://${testHost}/`,
+          pathname: '/',
+          referrer: undefined,
+        });
       });
     });
   });
@@ -81,6 +104,42 @@ describe('shared -> values', () => {
       expect(getSpy).toBeCalledWith(testKey);
       expect(setSpy).not.toBeCalledWith(testKey, result);
     });
+
+    describe('when localStorage is not available', () => {
+      let storageSpy;
+      let warnSpy;
+
+      // Required because of memoized local var supportsLocalStorage
+      jest.resetModules();
+      const getClientIdCopy = (require('../src/values') as typeof import('../src/values')).getClientId;
+
+      beforeEach(() => {
+        warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
+        storageSpy = jest.spyOn(window, "localStorage", "get");
+        storageSpy.mockImplementation(() => undefined);
+        getSpy.mockReturnValue(null);
+      });
+
+
+      afterEach(() => {
+        storageSpy.mockRestore();
+      });
+
+      it('warns via a console statement', () => {
+        getClientIdCopy(testKey);
+
+        expect(warnSpy).toHaveBeenCalled();
+      });
+
+      it('generates a new clientId', () => {
+        getClientIdCopy(testKey);
+        getClientIdCopy(testKey);
+
+        expect(getSpy).toHaveBeenCalledTimes(2);
+        expect(setSpy).toHaveBeenCalledTimes(2);
+        expect(getSpy).toBeCalledWith(testKey);
+      });
+    });
   });
 
   describe('getEventParams', () => {
@@ -103,6 +162,72 @@ describe('shared -> values', () => {
       const result = getEventParams(event);
 
       expect(result).toEqual(event.map((items) => items.map((item) => item?.toString())));
+    });
+  });
+
+  describe('getSessionState', () => {
+    beforeEach(() => {
+      sessionStorage.clear();
+    });
+
+    it('correctly sets firstVisit, sessionStart, and sessionCount after multiple calls', () => {
+      let state = getSessionState(true);
+
+      expect(state.firstVisit).toEqual('1');
+      expect(state.sessionStart).toEqual('1');
+      expect(state.sessionCount).toEqual('1');
+
+      state = getSessionState(false);
+      getSessionId();
+
+      expect(state.firstVisit).toBeUndefined;
+      expect(state.sessionStart).toBeUndefined;
+      expect(state.sessionCount).toEqual('1');
+    });
+
+    it('correctly sets firstVisit after clientId is set', () => {
+      let state = getSessionState(true);
+
+      expect(state.firstVisit).toEqual('1');
+
+      getClientId();
+
+      state = getSessionState(true);
+
+      expect(state.firstVisit).toBeUndefined;
+    });
+
+    it('correctly sets firstVisit after clientId is set directly', () => {
+      localStorage.setItem('clientId', testClientId);
+      const state = getSessionState(true);
+      expect(state.firstVisit).toBeUndefined
+    });
+  });
+
+  describe('getSessionId', () => {
+    let getSpy;
+    let setSpy;
+
+    beforeEach(() => {
+      sessionStorage.clear();
+      getSpy = jest.spyOn(Storage.prototype, 'getItem');
+      setSpy = jest.spyOn(Storage.prototype, 'setItem');
+    });
+
+    afterEach(() => {
+      getSpy.mockClear();
+      setSpy.mockClear();
+    });
+
+    it('returns the same id after multiple calls', () => {
+      const id1 = getSessionId();
+      const id2 = getSessionId();
+
+      expect(id1).toEqual(testClientId);
+      expect(id1).toEqual(id2);
+
+      expect(getSpy).toBeCalledWith(sessionKey);
+      expect(setSpy).toBeCalledWith(sessionKey,testClientId );
     });
   });
 });

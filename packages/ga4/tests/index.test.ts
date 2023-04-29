@@ -1,4 +1,3 @@
-import { clientKey, counterKey, sessionKey } from '@minimal-analytics/shared';
 import { track } from '../src/index';
 import { param } from '../src/model';
 
@@ -50,7 +49,11 @@ const sleep = (time = 1) => new Promise((resolve) => setTimeout(resolve, time * 
  *
  * -------------------------------- */
 
-Object.defineProperty(navigator, 'sendBeacon', { value: jest.fn() });
+Object.defineProperty(navigator, 'sendBeacon', {
+  writable: true,
+  configurable: true,
+  value: jest.fn()
+});
 
 /* -----------------------------------
  *
@@ -86,6 +89,8 @@ describe('ga4 -> track()', () => {
     jest.resetAllMocks();
     root = document.createElement('div');
     document.body.appendChild(root);
+    localStorage.clear();
+    sessionStorage.clear();
   });
 
   afterEach(() => {
@@ -103,6 +108,74 @@ describe('ga4 -> track()', () => {
     track(trackingId);
 
     expect(navigator.sendBeacon).toBeCalledTimes(1);
+  });
+
+  describe('when navigator.sendBeacon is not available', () => {
+    const originalXhr = XMLHttpRequest;
+    const originalSendBeacon = navigator.sendBeacon;
+    const xhrMock: Partial<XMLHttpRequest> = {
+      open: jest.fn(),
+      send: jest.fn(),
+      setRequestHeader: jest.fn(),
+      readyState: 4,
+      status: 200,
+      response: 'OK'
+    };
+
+    beforeEach(() => {
+      jest.spyOn(window, 'XMLHttpRequest')
+        .mockImplementation(() => xhrMock as XMLHttpRequest);
+      Object.defineProperty(navigator, 'sendBeacon', {
+        writable: true,
+        configurable: true,
+        value: undefined
+      });
+    });
+  
+    afterEach(() => {
+      window.XMLHttpRequest = originalXhr;
+      Object.defineProperty(navigator, 'sendBeacon', {
+        writable: true,
+        configurable: true,
+        value: originalSendBeacon
+      });
+    });
+
+    it('it defaults to XMLHttpRequest', () => {
+      track(trackingId);
+
+      expect(xhrMock.open)
+        .toBeCalledWith('POST', expect.stringContaining(analyticsEndpoint), expect.anything());
+    });
+
+    describe('when XMLHttpRequest is not available', () => {
+      const originalFetch = global.fetch;
+      const fetchMock = jest.fn();
+
+      beforeEach(() => {
+        Object.assign(window, {
+          XMLHttpRequest: undefined,
+        });
+        global.fetch = fetchMock;
+        fetchMock.mockImplementation(() => Promise.resolve(''));
+      });
+
+      afterEach(() => {
+        global.fetch = originalFetch;
+        Object.assign(window, {
+          XMLHttpRequest: originalXhr,
+        });
+      });
+
+      it('it defaults to fetch', () => {
+        track(trackingId);
+
+        expect(fetch)
+          .toBeCalledWith(expect.stringContaining(analyticsEndpoint), expect.objectContaining({
+            method: 'POST'
+          }));
+      });
+    });
   });
 
   it('defines the correct query params when sending a default page view', () => {
@@ -126,10 +199,6 @@ describe('ga4 -> track()', () => {
   });
 
   it('correctly defines a users first visit when tracking is called ', () => {
-    localStorage.removeItem(clientKey);
-    sessionStorage.removeItem(sessionKey);
-    sessionStorage.removeItem(counterKey);
-
     track(trackingId);
 
     expect(navigator.sendBeacon).toBeCalledTimes(1);
@@ -217,6 +286,26 @@ describe('ga4 -> track()', () => {
     track(trackingId, {
       type: testEvent,
       event: { [`${param.eventParamNumber}.random`]: testData },
+    });
+
+    expect(navigator.sendBeacon).toBeCalledTimes(1);
+
+    params.forEach((param) =>
+      expect(navigator.sendBeacon).toBeCalledWith(expect.stringContaining(param))
+    );
+  });
+
+  it('overrides existing params when set by user', () => {
+    const testClientId = '123456789';
+    const params = [
+      `${param.eventParam}.${param.clientId}=${testClientId}`,
+    ];
+
+    track(trackingId, {
+      type: testEvent,
+      event: {
+        [`${param.eventParam}.${param.clientId}`]: testClientId,
+      },
     });
 
     expect(navigator.sendBeacon).toBeCalledTimes(1);
@@ -379,5 +468,46 @@ describe('ga4 -> track()', () => {
     await sleep();
 
     expect(navigator.sendBeacon).toBeCalledTimes(2);
+  });
+
+  describe('global variables', () => {
+    beforeEach(() => {
+      jest.resetModules();
+      jest.restoreAllMocks();
+    });
+
+    it('does not trigger a tracking event when autoTrack is disabled', async () => {
+      window['minimalAnalytics'] = {
+        autoTrack: false,
+        trackingId: trackingId,
+      };
+      await import('../src/index');
+      expect(navigator.sendBeacon).not.toHaveBeenCalled();
+    });
+
+    it('triggers a tracking event when autoTrack is enabled', async () => {
+      window['minimalAnalytics'] = {
+        autoTrack: true,
+        trackingId: trackingId,
+      };
+      await import('../src/index');
+      expect(navigator.sendBeacon).toHaveBeenCalled();
+    });
+
+    it('does not define a global function when defineGlobal is disabled', async () => {
+      window['minimalAnalytics'] = {
+        defineGlobal: false,
+      };
+      await import('../src/index');
+      expect(typeof window['track']).toBe('undefined');
+    });
+
+    it('defines a global function when defineGlobal is enabled', async () => {
+      window['minimalAnalytics'] = {
+        defineGlobal: true,
+      };
+      await import('../src/index');
+      expect(typeof window['track']).toBe('function');
+    });
   });
 });
