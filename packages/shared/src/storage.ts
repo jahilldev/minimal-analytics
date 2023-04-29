@@ -6,18 +6,8 @@
 
 type StorageClassName = 'localStorage' | 'sessionStorage';
 
-
-function getRootObject(): Window | undefined {
-   if (typeof self === 'object') {
-      return self;
-   } else if (typeof window === 'object') {
-      return window;
-   }
-}
-
 function hasStorage(name: StorageClassName): boolean {
-   const root = getRootObject();
-   return (root && typeof root[name] !== 'undefined');
+   return (typeof globalThis[name] !== 'undefined');
 }
 
 function isStorageClassSupported(storageInstance: Storage) {
@@ -82,8 +72,7 @@ function safeStorageFactory<T extends Storage>(storageClassName: StorageClassNam
       return new defaultStorageClass();
    }
 
-   const root = getRootObject();
-   const storageInstance = root[storageClassName];
+   const storageInstance = globalThis[storageClassName];
    const storageClassSupported = isStorageClassSupported(storageInstance);
    if (!storageClassSupported) {
       return new defaultStorageClass();
@@ -99,7 +88,6 @@ function safeStorageFactory<T extends Storage>(storageClassName: StorageClassNam
  * -------------------------------- */
 
 export {
-   getRootObject,
    MemoryStorage,
    safeStorageFactory,
    hasStorage,

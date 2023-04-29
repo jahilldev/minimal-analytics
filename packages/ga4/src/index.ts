@@ -9,7 +9,6 @@ import {
   isTargetElement,
   getUrlData,
   getEventParams,
-  getRootObject,
   mergeEventParams,
   EventParamArray,
 } from '@minimal-analytics/shared';
@@ -35,8 +34,6 @@ declare global {
   }
 }
 
-const root = getRootObject();
-
 /* -----------------------------------
  *
  * IProps
@@ -56,8 +53,8 @@ interface IProps {
  * -------------------------------- */
 
 const isBrowser = typeof window !== 'undefined';
-const defineGlobal = isBrowser && root?.minimalAnalytics?.defineGlobal;
-const autoTrack = isBrowser && root?.minimalAnalytics?.autoTrack;
+const defineGlobal = isBrowser && globalThis.minimalAnalytics?.defineGlobal;
+const autoTrack = isBrowser && globalThis.minimalAnalytics?.autoTrack;
 const analyticsEndpoint = 'https://www.google-analytics.com/g/collect';
 const searchTerms = ['q', 's', 'search', 'query', 'keyword'];
 const clickTargets = 'a, button, input[type=submit], input[type=button]';
@@ -89,7 +86,7 @@ const eventKeys = {
  * -------------------------------- */
 
 function getArguments(args: any[]): [string | undefined, IProps] {
-  const globalId = root?.minimalAnalytics?.trackingId;
+  const globalId = globalThis.minimalAnalytics?.trackingId;
   const trackingId = typeof args[0] === 'string' ? args[0] : globalId;
   const props = typeof args[0] === 'object' ? args[0] : args[1] || {};
 
@@ -103,7 +100,7 @@ function getArguments(args: any[]): [string | undefined, IProps] {
  * -------------------------------- */
 
 function getEventMeta({ type = '', event }: Pick<IProps, 'type' | 'event'>): EventParamArray {
-  const searchString = root?.document?.location?.search || root?.location?.search || '';
+  const searchString = globalThis.document?.location?.search || globalThis.location?.search || '';
   const searchParams = new URLSearchParams(searchString);
 
   const searchResults = searchTerms.some((term) =>
@@ -264,7 +261,7 @@ function onFocusEvent() {
 function onVisibilityChange() {
   const timeIndex = engagementTimes.length - 1;
   const [, isHidden] = engagementTimes[timeIndex];
-  const stateIndex = ['hidden', 'visible'].indexOf(root?.document?.visibilityState || '');
+  const stateIndex = ['hidden', 'visible'].indexOf(globalThis.document?.visibilityState || '');
   const isVisible = Boolean(stateIndex);
 
   if (stateIndex === -1) {
@@ -300,7 +297,7 @@ const onScrollEvent = debounce((trackingId: string) => {
     event: eventParams,
   });
 
-  root?.document?.removeEventListener('scroll', scrollHandler);
+  globalThis.document?.removeEventListener('scroll', scrollHandler);
 });
 
 /* -----------------------------------
@@ -333,13 +330,13 @@ function bindEvents(trackingId: string) {
   scrollHandler = onScrollEvent.bind(null, trackingId);
   unloadHandler = onUnloadEvent.bind(null, trackingId);
 
-  root?.document?.addEventListener('visibilitychange', onVisibilityChange);
-  root?.document?.addEventListener('scroll', scrollHandler);
-  root?.document?.addEventListener('click', clickHandler);
+  globalThis.document?.addEventListener('visibilitychange', onVisibilityChange);
+  globalThis.document?.addEventListener('scroll', scrollHandler);
+  globalThis.document?.addEventListener('click', clickHandler);
 
-  root?.addEventListener('blur', onBlurEvent);
-  root?.addEventListener('focus', onFocusEvent);
-  root?.addEventListener('beforeunload', unloadHandler);
+  globalThis.addEventListener('blur', onBlurEvent);
+  globalThis.addEventListener('focus', onFocusEvent);
+  globalThis.addEventListener('beforeunload', unloadHandler);
 }
 
 /* -----------------------------------
@@ -360,7 +357,7 @@ function track(...args: any[]) {
   }
 
   const queryParams = getQueryParams(trackingId, { type, event, debug });
-  const endpoint = root?.minimalAnalytics?.analyticsEndpoint || analyticsEndpoint;
+  const endpoint = globalThis.minimalAnalytics?.analyticsEndpoint || analyticsEndpoint;
 
   sendBeacon(`${endpoint}?${queryParams}`);
 
@@ -377,8 +374,8 @@ function track(...args: any[]) {
  *
  * -------------------------------- */
 
-if (defineGlobal && root) {
-  root.track = track;
+if (defineGlobal && globalThis) {
+  globalThis.track = track;
 }
 
 /* -----------------------------------

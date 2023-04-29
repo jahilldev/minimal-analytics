@@ -1,4 +1,4 @@
-import { getRootObject, hasStorage, isStorageClassSupported, MemoryStorage, safeStorageFactory } from './storage';
+import { hasStorage, isStorageClassSupported, MemoryStorage, safeStorageFactory } from './storage';
 import { getRandomId } from './utility';
 
 /* -----------------------------------
@@ -37,12 +37,11 @@ const SessionStorage = safeStorageFactory('sessionStorage', MemoryStorage);
  * -------------------------------- */
 
 function getDocument() {
-  const root = getRootObject();
-  const location = root.document?.location || root.location;
+  const location = globalThis.document?.location || globalThis.location;
 
   const { hostname, origin, pathname, search } = location || { };
-  const title = root.document?.title;
-  const referrer = root.document?.referrer;
+  const title = globalThis.document?.title;
+  const referrer = globalThis.document?.referrer;
 
   return { location: origin + pathname + search, hostname, pathname, referrer, title };
 }
@@ -56,9 +55,8 @@ function getDocument() {
 let supportsLocalStorage = null;
 function maybeWarnStorage() {
   if (typeof supportsLocalStorage !== 'boolean') {
-    const root = getRootObject();
     const hasLocalStorage = hasStorage('localStorage');
-    const isLocalStorageSupported = isStorageClassSupported(root['localStorage']);
+    const isLocalStorageSupported = isStorageClassSupported(globalThis['localStorage']);
     supportsLocalStorage = (hasLocalStorage && isLocalStorageSupported);
   }
 
